@@ -1,6 +1,7 @@
-import decoders
+from kaldi2 import decoders
 import wave
 import struct
+import os
 
 MODEL_PATH = "../_models/nnet_model"
 
@@ -21,7 +22,7 @@ if __name__ == "__main__":
         '--endpoint.silence-phones=1:2:3:4:5:6:7:8:9:10'
     ])
 
-    data = wave.open('test.wav')
+    data = wave.open(os.path.join(os.path.dirname(__file__), 'test.wav'))
     wav_duration = data.getnframes() * 1.0 / data.getframerate()
 
     import time

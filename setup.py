@@ -5,9 +5,9 @@
 # python setup.py build_ext --compiler=msvc
 # cython: embedsignature=True
 from __future__ import print_function
-from setuptools import setup
+from setuptools import setup, find_packages
 from sys import version_info as python_version
-from os import path
+import os
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 from os import environ
@@ -37,7 +37,11 @@ extra_compile_args = ['-std=c++11', '-DNO_KALDI_HEADERS']
 
 extra_compile_args.extend(environ['CXXFLAGS'].split())
 
+pyfst_dir = environ['PYFST_DIR']
+kaldi_dir = environ['KALDI_DIR']
 
+def kaldi_path(path):
+    return os.path.join(kaldi_dir, path)
 
 extra_link_args = []
 
@@ -47,9 +51,9 @@ if platform == 'darwin':
     extra_compile_args.extend(['-arch i386', '-arch x86_64'])
     extra_link_args.append('-stdlib=libstdc++')
     library_dirs = []
-    libraries = ['../kaldi/tools/openfst/lib/libfst.a', 'dl', 'm', 'pthread', ]
+    libraries = [kaldi_path('/tools/openfst/lib/libfst.a'), 'dl', 'm', 'pthread', ]
 else:
-    library_dirs = ['/usr/lib', '../kaldi/tools/openfst/lib']
+    library_dirs = ['/usr/lib', kaldi_path('tools/openfst/lib')]
     libraries = ['fst', 'lapack_atlas', 'cblas', 'atlas', 'f77blas', 'm', 'pthread', 'dl']
 ext_modules.append(Extension('kaldi2.decoders',
                              language='c++',
@@ -57,9 +61,9 @@ ext_modules.append(Extension('kaldi2.decoders',
                              extra_link_args=extra_link_args,
                              include_dirs=[
                                  '.',
-                                 '../kaldi/tools/openfst/include',
-                                 '../kaldi/src',
-                                 '../pyfst',
+                                 kaldi_path('tools/openfst/include'),
+                                 kaldi_path('src'),
+                                 pyfst_dir,
                              ],
                              library_dirs=library_dirs,
                              libraries=libraries,
@@ -69,9 +73,8 @@ ext_modules.append(Extension('kaldi2.decoders',
 
 
 setup(
-    name='pykaldi2',
-    packages=['kaldi2', ],
-    package_data={'kaldi2': ['decoders.so']},
+    name='kaldi2',
+    packages=find_packages(exclude=["kaldi2/decoders.cpp"]),
     include_package_data=True,
     cmdclass={'build_ext': build_ext},
     version=version,
@@ -79,10 +82,10 @@ setup(
     setup_requires=['cython>=0.19.1', 'nose>=1.0'],
     ext_modules=ext_modules,
     test_suite="nose.collector",
-    tests_require=['nose>=1.0', 'pykaldi'],
-    author='Ondrej Platek',
-    author_email='oplatek@ufal.mff.cuni.cz',
-    url='https://github.com/DSG-UFAL/pykaldi',
+    tests_require=['nose>=1.0', 'kaldi2'],
+    author='Lukas Zilka',
+    author_email='lukas@zilka.me',
+    url='https://github.com/DSG-UFAL/pykaldi2',
     license='Apache, Version 2.0',
     keywords='Kaldi speech recognition Python bindings',
     description='C++/Python wrapper for Kaldi decoders',

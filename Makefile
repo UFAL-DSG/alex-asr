@@ -1,7 +1,11 @@
 KALDI_DIR = ../kaldi
-FSTDIR=$(KALDI_DIR)/tools/openfst
+PYFST_DIR=../pyfst
 
-all: py
+OBJFILES = pykaldi2_decoder/pykaldi2_decoder.o pykaldi2_decoder/utils.o
+
+LIBNAME = pykaldi2
+
+all:
 
 include $(KALDI_DIR)/src/kaldi.mk
 
@@ -14,20 +18,22 @@ ADDLIBS = $(KALDI_DIR)/src/online2/kaldi-online2.a $(KALDI_DIR)/src/ivector/kald
           $(KALDI_DIR)/src/thread/kaldi-thread.a $(KALDI_DIR)/src/hmm/kaldi-hmm.a $(KALDI_DIR)/src/tree/kaldi-tree.a \
           $(KALDI_DIR)/src/matrix/kaldi-matrix.a $(KALDI_DIR)/src/util/kaldi-util.a $(KALDI_DIR)/src/base/kaldi-base.a
 
-OBJFILES = pykaldi2_decoder/pykaldi2_decoder.o pykaldi2_decoder/utils.o
-
-LIBNAME = pykaldi2
-
 include $(KALDI_DIR)/src/makefiles/default_rules.mk
 
-py: $(LIBNAME).a
+py: all
 	CXXFLAGS="$(CXXFLAGS)" \
+	PYFST_DIR="$(FSTROOT)" \
+	KALDI_DIR="$(KALDI_DIR)" \
 	PYKALDI_ADDLIBS="pykaldi2.a $(ADDLIBS)" \
-	LIBRARY_PATH=$(FSTDIR)/lib:$(FSTDIR)/lib/fst CPLUS_INCLUDE_PATH=$(FSTDIR)/include \
-	python setup.py build_ext
+	LIBRARY_PATH=$(FSTROOT)/lib:$(FSTROOT)/lib/fst \
+	CPLUS_INCLUDE_PATH=$(FSTROOT)/include \
+	python setup.py build_ext build
 
 
 clean:
 	rm -rf build
 	rm $(LIBNAME).a lib$(LIBNAME).so
 	rm $(OBJFILES)
+
+test:
+	(PYTHONPATH=$(shell echo build/lib.*) python test/test.py )

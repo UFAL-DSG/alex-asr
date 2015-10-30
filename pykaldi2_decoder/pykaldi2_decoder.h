@@ -4,6 +4,8 @@
 #include "fst/fst-decl.h"
 #include "base/kaldi-types.h"
 
+// We have to do this hack with NO_KALDI_HEADERS, because Cython cannot compile
+// with Kaldi headers, because of redefinition of unordered_map.
 #ifndef NO_KALDI_HEADERS
 #include "pykaldi2_decoder/pykaldi2_decoder_config.h"
 
@@ -12,7 +14,6 @@
 #include "util/common-utils.h"
 #include "nnet2/online-nnet2-decodable.h"
 #include "online2/online-endpoint.h"
-
 #else
 namespace kaldi{
     template <typename Feat> class OnlineGenericBaseFeature;
