@@ -1,10 +1,10 @@
 # Build
 
-  $ make py
+    $ make py
 
 # Test
 
-  $ make test
+    $ make test
   
 # Credits
 
