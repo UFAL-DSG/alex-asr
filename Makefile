@@ -2,6 +2,7 @@ KALDI_DIR = ../kaldi
 PYFST_DIR=../pyfst
 
 OBJFILES = pykaldi2_decoder/pykaldi2_decoder.o pykaldi2_decoder/utils.o
+BINFILES = pykaldi2_decoder/pykaldi2_decoder_cli
 
 LIBNAME = pykaldi2
 
@@ -32,8 +33,8 @@ py: all
 
 clean:
 	rm -rf build
-	rm $(LIBNAME).a lib$(LIBNAME).so
-	rm $(OBJFILES)
+	rm -f $(LIBNAME).a lib$(LIBNAME).so
+	rm -f $(OBJFILES)
 
 test:
 	(PYTHONPATH=$(shell echo build/lib.*) python test/test.py )

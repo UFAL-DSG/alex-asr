@@ -134,4 +134,10 @@ namespace kaldi {
     return 0.5 * (tot_backward_prob + tot_forward_prob);
   }
 
+    const string GetDirectory(const string& file_name) {
+        size_t found;
+        found = file_name.find_last_of("/\\");
+        return file_name.substr(0,found);
+    }
+
 } // namespace kaldi

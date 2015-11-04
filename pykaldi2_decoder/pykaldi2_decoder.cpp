@@ -5,19 +5,22 @@
 
 
 namespace kaldi {
-    bool PyKaldi2Decoder::Setup(int argc, const char* const* argv) {
+    bool PyKaldi2Decoder::Setup(const string model_path) {
         initialized_ = false;
+
+        local_cwd cwd_to_model_path(model_path);  // Change dir to model_path. Change back when leaving the scope.
+
         try {
-            if(!ParseConfig(argc, argv))
+            KALDI_LOG << "Setup.";
+            if(!ParseConfig()) {
                 return false;
+            }
 
             InitDecoder();
             InitTransformMatrices();
-            InitPipeline();
+            Reset();
 
             initialized_ = true;
-
-            Reset(false);
 
             return true;
         } catch(const std::exception& e) {
@@ -28,43 +31,62 @@ namespace kaldi {
         }
     }
 
+    void PyKaldi2Decoder::Reset() {
+        InitPipeline();
+        decoder_->InitDecoding();
+    }
+
     void PyKaldi2Decoder::InitPipeline() {
         DestroyPipeline();
 
-        cmvn_state_ = new OnlineCmvnState(*cmvn_mat_);
+        OnlineFeatureInterface *prev_feature;
 
-        mfcc_ = new OnlineMfcc(config_->mfcc_opts);
-        cmvn_ = new OnlineCmvn(config_->cmvn_opts, *cmvn_state_, mfcc_);
-        splice_ = new OnlineSpliceFrames(config_->splice_opts, cmvn_);
-        transform_lda_ = new OnlineTransform(*lda_mat_, splice_);
-        transform_fmllr_ = new OnlineTransform(*fmllr_mat_, transform_lda_);
+        KALDI_LOG << "Feature MFCC " << config_->mfcc_opts.mel_opts.low_freq << " " << config_->mfcc_opts.mel_opts.high_freq;
+        prev_feature = mfcc_ = new OnlineMfcc(config_->mfcc_opts);
+        KALDI_LOG << "    -> dims: " << mfcc_->Dim();
+
+        if (config_->use_cmvn) {
+            KALDI_LOG << "Feature CMVN";
+            cmvn_state_ = new OnlineCmvnState(*cmvn_mat_);
+            prev_feature = cmvn_ = new OnlineCmvn(config_->cmvn_opts, *cmvn_state_, prev_feature);
+        }
+        KALDI_LOG << "Feature SPLICE " << config_->splice_opts.left_context << " " << config_->splice_opts.right_context;
+        prev_feature = splice_ = new OnlineSpliceFrames(config_->splice_opts, prev_feature);
+        KALDI_LOG << "    -> dims: " << splice_->Dim();
+
+        KALDI_LOG << "Feature LDA " << lda_mat_->NumRows() << " " << lda_mat_->NumCols();
+        prev_feature = transform_lda_ = new OnlineTransform(*lda_mat_, prev_feature);
+        KALDI_LOG << "    -> dims: " << transform_lda_->Dim();
+
+        if(config_->use_pitch) {
+            pitch_ = new OnlinePitchFeature(config_->pitch_opts);
+            pitch_feature_ = new OnlineProcessPitch(config_->pitch_process_opts, pitch_);
+            pitch_append_ = new OnlineAppendFeature(mfcc_, pitch_feature_);
+        }
+
+        if (config_->use_ivectors) {
+            KALDI_LOG << "Feature IVectors";
+            ivector_ = new OnlineIvectorFeature(*ivector_extraction_info_, mfcc_);
+            prev_feature = ivector_append_ = new OnlineAppendFeature(mfcc_, ivector_);
+            KALDI_LOG << "     -> dims: " << prev_feature->Dim();
+        }
+
+        final_feature_ = prev_feature;
 
         decodable_ = new nnet2::DecodableNnet2Online(*am_,
                                                      *trans_model_,
                                                      config_->decodable_opts,
-                                                     transform_fmllr_);
+                                                     final_feature_);
     }
 
-    void PyKaldi2Decoder::Reset(bool reset_pipeline) {
-        if (! initialized_)
-            return;
 
-        if(reset_pipeline)
-            InitPipeline();
 
-        decoder_->InitDecoding();
-    }
-
-    bool PyKaldi2Decoder::ParseConfig(int argc, const char *const *argv) {
+    bool PyKaldi2Decoder::ParseConfig() {
         if (config_ == NULL)
             config_ = new PyKaldi2DecoderConfig();
 
-        {
-            ParseOptions po("");
-            config_->Register(&po);
+        config_->LoadConfigs("pykaldi.cfg");
 
-            po.Read(argc, argv);
-        }
 
         if(!config_->Check()) {
             KALDI_ERR << "Please check that you specified all required arguments.";
@@ -92,6 +114,7 @@ namespace kaldi {
 
     void PyKaldi2Decoder::InitTransformMatrices() {
         {
+            KALDI_LOG << "Loading LDA matrix.";
             bool binary_in;
             Input ki(config_->lda_mat_rspecifier, &binary_in);
             delete lda_mat_;
@@ -99,20 +122,18 @@ namespace kaldi {
             lda_mat_->Read(ki.Stream(), binary_in);
         }
 
+        if(config_->fcmvn_mat_rspecifier != "")
         {
-            bool binary_in;
-            Input ki(config_->fmllr_mat_rspecifier, &binary_in);
-            delete fmllr_mat_;
-            fmllr_mat_ = new Matrix<BaseFloat>();
-            fmllr_mat_->Read(ki.Stream(), binary_in);
-        }
-
-        {
+            KALDI_LOG << "Loading global CMVN stats.";
             bool binary_in;
             Input ki(config_->fcmvn_mat_rspecifier, &binary_in);
             delete cmvn_mat_;
             cmvn_mat_ = new Matrix<double>();
             cmvn_mat_->Read(ki.Stream(), binary_in);
+        }
+        if(config_->use_ivectors) {
+            KALDI_LOG << "Loading IVector extraction info.";
+            ivector_extraction_info_ = new OnlineIvectorExtractionInfo(config_->ivector_config);
         }
     }
 
@@ -155,6 +176,10 @@ namespace kaldi {
             }
         }
         this->FrameIn(&waveform);
+    }
+
+    void PyKaldi2Decoder::InputFinished() {
+        mfcc_->InputFinished();
     }
 
     size_t PyKaldi2Decoder::Decode(size_t max_frames) {
@@ -235,7 +260,6 @@ namespace kaldi {
         delete am_; am_ = NULL;
 
         delete lda_mat_; lda_mat_ = NULL;
-        delete fmllr_mat_; fmllr_mat_= NULL;
         delete cmvn_mat_; cmvn_mat_ = NULL;
 
         delete words_; words_ = NULL;
@@ -254,9 +278,10 @@ namespace kaldi {
         splice_ = NULL;
         delete transform_lda_;
         transform_lda_ = NULL;
-        delete transform_fmllr_;
-        transform_fmllr_ = NULL;
-        delete decodable_;
-        decodable_ = NULL;
+
+        delete ivector_append_;
+        ivector_append_ = NULL;
+        delete ivector_;
+        ivector_ = NULL;
     }
 } // namespace kaldi

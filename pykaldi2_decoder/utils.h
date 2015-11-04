@@ -19,9 +19,11 @@
 #ifndef PYKALDI2_UTILS_H_
 #define PYKALDI2_UTILS_H_
 #include <string>
+#include <sys/param.h>
 #include "base/kaldi-common.h"
 #include "fstext/fstext-lib.h"
 #include "lat/kaldi-lattice.h"
+
 
 #ifdef DEBUG
 #include <fstream>
@@ -59,6 +61,25 @@ namespace kaldi {
                                                vector<double> *alpha,
                                                vector<double> *beta);
 
+    const string GetDirectory(const string& file_name);
+
+    class local_cwd
+    {
+        string orig_dir_;
+
+    public:
+        local_cwd(string dir)
+        {
+            char temp[MAXPATHLEN];
+            orig_dir_ = ( getcwd(temp, MAXPATHLEN) ? std::string( temp ) : std::string("") );
+
+            chdir(dir.c_str());
+        }
+        ~local_cwd()
+        {
+            chdir(orig_dir_.c_str());
+        }
+    };
 } // namespace kaldi
 
 #endif // KALDI_DEC_WRAP_UTILS_H_

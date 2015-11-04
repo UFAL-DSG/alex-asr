@@ -22,6 +22,9 @@ namespace kaldi{
     class OnlineCmvnState;
     class OnlineSpliceFrames;
     class OnlineTransform;
+    class OnlineIvectorFeature;
+    class OnlineIvectorExtractionInfo;
+    class OnlineAppendFeature;
     typedef OnlineGenericBaseFeature<Mfcc> OnlineMfcc;  // Instance of template for Mfcc/PLP/FilterBanks
     template <typename Num> class Matrix;
 
@@ -55,15 +58,17 @@ namespace kaldi {
                 cmvn_state_(NULL),
                 splice_(NULL),
                 transform_lda_(NULL),
-                transform_fmllr_(NULL),
+                ivector_(NULL),
+                ivector_extraction_info_(NULL),
+                ivector_append_(NULL),
                 hclg_(NULL),
                 decodable_(NULL),
                 decoder_(NULL),
                 trans_model_(NULL),
                 am_(NULL),
                 lda_mat_(NULL),
-                fmllr_mat_(NULL),
                 cmvn_mat_(NULL),
+                words_(NULL),
                 config_(NULL)
         { }
 
@@ -74,17 +79,24 @@ namespace kaldi {
         bool GetBestPath(std::vector<int> *v_out, BaseFloat *prob);
         bool GetLattice(fst::VectorFst<fst::LogArc> * out_fst, double *tot_lik, bool end_of_utt=true);
         string GetWord(int word_id);
+        void InputFinished();
         bool EndpointDetected();
         void FinalizeDecoding();
-        void Reset(bool reset_pipeline);
-        bool Setup(int argc, const char* const* argv);
+        void Reset();
+        bool Setup(const string cfg_filename);
     private:
         OnlineMfcc *mfcc_;
         OnlineCmvn *cmvn_;
         OnlineCmvnState *cmvn_state_;
         OnlineSpliceFrames *splice_;
         OnlineTransform *transform_lda_;
-        OnlineTransform *transform_fmllr_;
+        OnlineIvectorFeature *ivector_;
+        OnlineIvectorExtractionInfo *ivector_extraction_info_;
+        OnlineAppendFeature *ivector_append_;
+        OnlinePitchFeature *pitch_;
+        OnlineProcessPitch *pitch_feature_;
+        OnlineAppendFeature *pitch_append_;
+        OnlineFeatureInterface *final_feature_;
 
         fst::StdFst *hclg_;
         nnet2::DecodableNnet2Online *decodable_;
@@ -94,7 +106,6 @@ namespace kaldi {
         nnet2::AmNnet *am_;
 
         Matrix<BaseFloat> *lda_mat_;
-        Matrix<BaseFloat> *fmllr_mat_;
         Matrix<double> *cmvn_mat_;
 
         fst::SymbolTable *words_;
@@ -104,7 +115,7 @@ namespace kaldi {
         void InitPipeline();
         void InitTransformMatrices();
         void InitDecoder();
-        bool ParseConfig(int argc, const char* const* argv);
+        bool ParseConfig();
         void DestroyPipeline();
         void Deallocate();
     };

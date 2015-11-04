@@ -3,26 +3,16 @@ import wave
 import struct
 import os
 
-MODEL_PATH = "../_models/nnet_model"
+MODEL_PATH = "../_models/nnet_model_cs_voip"
 
 if __name__ == "__main__":
     x = decoders.cPyKaldi2Decoder()
-    x.setup([
-        '--model=%s/final.mdl' % MODEL_PATH,
-        '--words=%s/words.txt' % MODEL_PATH,
-        '--hclg=%s/HCLG.fst' % MODEL_PATH,
-        '--mat_lda=%s/final.mat' % MODEL_PATH,
-        '--mat_fmllr=%s/trans.sum' % MODEL_PATH,
-        '--mat_cmvn=%s/cmvn_global.mat' % MODEL_PATH,
-        '--max-active=7000',
-        '--min-active=200',
-        '--beam=15.0',
-        '--lattice-beam=8.0',
-        '--acoustic-scale=0.1',
-        '--endpoint.silence-phones=1:2:3:4:5:6:7:8:9:10'
-    ])
+    x.setup([os.path.join(MODEL_PATH, 'pykaldi.cfg')])
 
-    data = wave.open(os.path.join(os.path.dirname(__file__), 'test.wav'))
+    print os.getcwd()
+
+    #data = wave.open(os.path.join(os.path.dirname(__file__), 'test2.wav'))
+    data = wave.open('/tmp/x.wav')
     wav_duration = data.getnframes() * 1.0 / data.getframerate()
 
     import time
@@ -38,7 +28,7 @@ if __name__ == "__main__":
 
         if n_decoded > 0:
             prob, word_ids = x.get_best_path()
-            print x.endpoint_detected(), map(x.get_word, word_ids)
+            print map(x.get_word, word_ids)  #x.endpoint_detected(),
 
     end_time = time.time()
 
