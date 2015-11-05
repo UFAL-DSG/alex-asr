@@ -13,11 +13,12 @@ make -C libs/kaldi/tools openfst OPENFST_VERSION=${OPENFST_VERSION}; echo "Insta
 
 (cd libs/kaldi/src; ./configure --shared)
 
-make -C libs/kaldi/src
+cp libs/kaldi/tools/openfst/lib/lib/libfst.so /usr/lib/
 
+make -C libs/kaldi/src
 
 pip install pyyaml
 pushd libs/pyfst
-LIBRARY_PATH=${FSTDIR}/lib:${FSTDIR}/lib/fst CPLUS_INCLUDE_PATH=${FSTDIR}/include ${PYTHON} setup.py build_ext --inplace
+LIBRARY_PATH=${FSTDIR}/lib:${FSTDIR}/lib/fst CPLUS_INCLUDE_PATH=${FSTDIR}/include ${PYTHON} setup.py build_ext --inplace install
 popd
 

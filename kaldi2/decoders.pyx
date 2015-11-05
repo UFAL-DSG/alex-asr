@@ -10,7 +10,7 @@ from libcpp.string cimport string
 cimport fst._fst
 cimport fst.libfst
 import fst
-from kaldi.utils import lattice_to_nbest
+from kaldi2.utils import lattice_to_nbest
 
 
 
