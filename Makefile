@@ -24,8 +24,6 @@ include $(KALDI_DIR)/src/makefiles/default_rules.mk
 
 py: all
 	CXXFLAGS="$(CXXFLAGS)" \
-	PYFST_DIR="$(PYFST_DIR)" \
-	KALDI_DIR="$(KALDI_DIR)" \
 	PYKALDI_ADDLIBS="pykaldi2.a $(ADDLIBS)" \
 	LIBRARY_PATH=$(FSTROOT)/lib:$(FSTROOT)/lib/fst \
 	CPLUS_INCLUDE_PATH=$(FSTROOT)/include \

@@ -36,10 +36,14 @@ except:
 
 extra_compile_args = []  #'-std=c++11', '-DNO_KALDI_HEADERS']
 
-extra_compile_args.extend(environ['CXXFLAGS'].split())
+extra_compile_args.extend(environ.get('CXXFLAGS', '').split())
 
-pyfst_dir = environ['PYFST_DIR']
-kaldi_dir = environ['KALDI_DIR']
+try:
+    pyfst_dir = environ['PYFST_DIR']
+    kaldi_dir = environ['KALDI_DIR']
+except:
+    pyfst_dir = 'libs/pyfst'
+    kaldi_dir = 'libs/kaldi'
 
 def kaldi_path(path):
     return os.path.join(kaldi_dir, path)
