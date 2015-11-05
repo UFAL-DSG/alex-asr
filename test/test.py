@@ -6,13 +6,12 @@ import os
 MODEL_PATH = "../_models/nnet_model_cs_voip"
 
 if __name__ == "__main__":
-    x = decoders.cPyKaldi2Decoder()
-    x.setup([os.path.join(MODEL_PATH, 'pykaldi.cfg')])
+    x = decoders.cPyKaldi2Decoder(MODEL_PATH)
 
     print os.getcwd()
 
     #data = wave.open(os.path.join(os.path.dirname(__file__), 'test2.wav'))
-    data = wave.open('/tmp/x.wav')
+    data = wave.open('test/test2.wav')
     wav_duration = data.getnframes() * 1.0 / data.getframerate()
 
     import time

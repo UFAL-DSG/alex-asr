@@ -1,5 +1,5 @@
-KALDI_DIR = ../kaldi
-PYFST_DIR=../pyfst
+KALDI_DIR = libs/kaldi
+PYFST_DIR = libs/pyfst
 
 OBJFILES = pykaldi2_decoder/pykaldi2_decoder.o pykaldi2_decoder/utils.o pykaldi2_decoder/pykaldi2_feature_pipeline.o \
            pykaldi2_decoder/pykaldi2_decoder_config.o
@@ -24,13 +24,12 @@ include $(KALDI_DIR)/src/makefiles/default_rules.mk
 
 py: all
 	CXXFLAGS="$(CXXFLAGS)" \
-	PYFST_DIR="$(FSTROOT)" \
+	PYFST_DIR="$(PYFST_DIR)" \
 	KALDI_DIR="$(KALDI_DIR)" \
 	PYKALDI_ADDLIBS="pykaldi2.a $(ADDLIBS)" \
 	LIBRARY_PATH=$(FSTROOT)/lib:$(FSTROOT)/lib/fst \
 	CPLUS_INCLUDE_PATH=$(FSTROOT)/include \
 	python setup.py build_ext build
-
 
 clean:
 	rm -rf build
@@ -39,3 +38,5 @@ clean:
 
 test:
 	(PYTHONPATH=$(shell echo build/lib.*) python test/test.py )
+
+

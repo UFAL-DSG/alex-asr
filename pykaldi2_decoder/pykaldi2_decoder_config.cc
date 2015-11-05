@@ -6,6 +6,9 @@
 
 namespace kaldi {
     PyKaldi2DecoderConfig::PyKaldi2DecoderConfig() :
+            lda_mat(NULL),
+            cmvn_mat(NULL),
+            ivector_extraction_info(NULL),
             bits_per_sample(16),
             use_ivectors(false),
             use_cmvn(false),
@@ -17,7 +20,8 @@ namespace kaldi {
             cfg_splice("cfg.splice"),
             cfg_endpoint("cfg.endpoint"),
             cfg_ivector("cfg.ivector"),
-            cfg_pitch("cfg.pitch") {
+            cfg_pitch("cfg.pitch")
+    {
         decodable_opts.acoustic_scale = 0.1;
         splice_opts.left_context = 3;
         splice_opts.right_context = 3;

@@ -14,6 +14,7 @@ from os import environ
 from sys import stderr
 from sys import platform
 
+
 install_requires = ['cython>=0.21', 'pystache>=0.5', 'pyyaml>=3.11']
 if python_version < (2, 7):
     new_27 = ['ordereddict', 'argparse']
@@ -33,7 +34,7 @@ try:
 except:
     version = 'dev-unknown'
 
-extra_compile_args = ['-std=c++11', '-DNO_KALDI_HEADERS']
+extra_compile_args = []  #'-std=c++11', '-DNO_KALDI_HEADERS']
 
 extra_compile_args.extend(environ['CXXFLAGS'].split())
 
