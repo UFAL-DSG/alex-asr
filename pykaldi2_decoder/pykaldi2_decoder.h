@@ -1,6 +1,7 @@
 #ifndef PYKALDI2_DECODER_H_
 #define PYKALDI2_DECODER_H_
 #include <vector>
+#include <memory>
 #include "fst/fst-decl.h"
 #include "base/kaldi-types.h"
 
@@ -8,6 +9,7 @@
 // with Kaldi headers, because of redefinition of unordered_map.
 #ifndef NO_KALDI_HEADERS
 #include "pykaldi2_decoder/pykaldi2_decoder_config.h"
+#include "pykaldi2_decoder/pykaldi2_feature_pipeline.h"
 
 #include "feat/online-feature.h"
 #include "matrix/matrix-lib.h"
@@ -16,17 +18,8 @@
 #include "online2/online-endpoint.h"
 #else
 namespace kaldi{
-    template <typename Feat> class OnlineGenericBaseFeature;
-    class Mfcc;
-    class OnlineCmvn;
-    class OnlineCmvnState;
-    class OnlineSpliceFrames;
-    class OnlineTransform;
-    class OnlineIvectorFeature;
-    class OnlineIvectorExtractionInfo;
-    class OnlineAppendFeature;
-    typedef OnlineGenericBaseFeature<Mfcc> OnlineMfcc;  // Instance of template for Mfcc/PLP/FilterBanks
-    template <typename Num> class Matrix;
+    class PyKaldi2FeaturePipeline;
+    class PyKaldi2DecoderImpl;
 
     class TransitionModel;
     namespace nnet2 {
@@ -52,29 +45,11 @@ namespace kaldi {
 
     class PyKaldi2Decoder {
     public:
-        PyKaldi2Decoder():
-                mfcc_(NULL),
-                cmvn_(NULL),
-                cmvn_state_(NULL),
-                splice_(NULL),
-                transform_lda_(NULL),
-                ivector_(NULL),
-                ivector_extraction_info_(NULL),
-                ivector_append_(NULL),
-                hclg_(NULL),
-                decodable_(NULL),
-                decoder_(NULL),
-                trans_model_(NULL),
-                am_(NULL),
-                lda_mat_(NULL),
-                cmvn_mat_(NULL),
-                words_(NULL),
-                config_(NULL)
-        { }
-
+        PyKaldi2Decoder(const string model_path);
         ~PyKaldi2Decoder();
-        size_t Decode(size_t max_frames);
-        void FrameIn(unsigned char *frame, size_t frame_len);
+
+        int32 Decode(int32 max_frames);
+        void FrameIn(unsigned char *frame, int32 frame_len);
         void FrameIn(VectorBase<BaseFloat> *waveform_in);
         bool GetBestPath(std::vector<int> *v_out, BaseFloat *prob);
         bool GetLattice(fst::VectorFst<fst::LogArc> * out_fst, double *tot_lik, bool end_of_utt=true);
@@ -83,40 +58,20 @@ namespace kaldi {
         bool EndpointDetected();
         void FinalizeDecoding();
         void Reset();
-        bool Setup(const string cfg_filename);
     private:
-        OnlineMfcc *mfcc_;
-        OnlineCmvn *cmvn_;
-        OnlineCmvnState *cmvn_state_;
-        OnlineSpliceFrames *splice_;
-        OnlineTransform *transform_lda_;
-        OnlineIvectorFeature *ivector_;
-        OnlineIvectorExtractionInfo *ivector_extraction_info_;
-        OnlineAppendFeature *ivector_append_;
-        OnlinePitchFeature *pitch_;
-        OnlineProcessPitch *pitch_feature_;
-        OnlineAppendFeature *pitch_append_;
-        OnlineFeatureInterface *final_feature_;
+        PyKaldi2FeaturePipeline *feature_pipeline_;
 
         fst::StdFst *hclg_;
-        nnet2::DecodableNnet2Online *decodable_;
         LatticeFasterOnlineDecoder *decoder_;
-
         TransitionModel *trans_model_;
         nnet2::AmNnet *am_;
-
-        Matrix<BaseFloat> *lda_mat_;
-        Matrix<double> *cmvn_mat_;
-
         fst::SymbolTable *words_;
-
         PyKaldi2DecoderConfig *config_;
-        bool initialized_;
-        void InitPipeline();
+        nnet2::DecodableNnet2Online *decodable_;
+
         void InitTransformMatrices();
-        void InitDecoder();
-        bool ParseConfig();
-        void DestroyPipeline();
+        void LoadDecoder();
+        void ParseConfig();
         void Deallocate();
     };
 

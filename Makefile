@@ -1,7 +1,8 @@
 KALDI_DIR = ../kaldi
 PYFST_DIR=../pyfst
 
-OBJFILES = pykaldi2_decoder/pykaldi2_decoder.o pykaldi2_decoder/utils.o
+OBJFILES = pykaldi2_decoder/pykaldi2_decoder.o pykaldi2_decoder/utils.o pykaldi2_decoder/pykaldi2_feature_pipeline.o \
+           pykaldi2_decoder/pykaldi2_decoder_config.o
 BINFILES = pykaldi2_decoder/pykaldi2_decoder_cli
 
 LIBNAME = pykaldi2

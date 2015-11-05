@@ -10,7 +10,7 @@
 using namespace kaldi;
 
 int main(int argc, const char* const* argv) {
-    PyKaldi2Decoder* decoder = new PyKaldi2Decoder();
+    PyKaldi2Decoder* decoder = new PyKaldi2Decoder(argv[2]);
 
     WaveData wave_data;
 
@@ -23,8 +23,6 @@ int main(int argc, const char* const* argv) {
         fb.close();
     }
 
-    decoder->Setup(argv[2]);
-
     KALDI_LOG << "Initialized.";
 
 
@@ -33,12 +31,12 @@ int main(int argc, const char* const* argv) {
         KALDI_ERR << "Wave should have only one channel";
     SubVector<BaseFloat> waveform(wave_data.Data(), this_chan);
 
-    for(int i = 0; i < 10; i++) {
+    for(int k = 0; k < 1; k++) {
         decoder->Reset();
 
-        size_t decoded_frames = 0;
-        size_t decoded_now = 0;
-        size_t max_decoded = 10;
+        int32 decoded_frames = 0;
+        int32 decoded_now = 0;
+        int32 max_decoded = 10;
 
 
 
@@ -54,7 +52,7 @@ int main(int argc, const char* const* argv) {
             decoder->GetBestPath(&words, &prob);
 
             std::cout << decoded_now << " hyp: ";
-            for (size_t i = 0; i < words.size(); i++) {
+            for (int32 i = 0; i < words.size(); i++) {
                 std::string s = decoder->GetWord(words[i]);
                 std::cout << s << ' ';
             }
