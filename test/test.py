@@ -10,8 +10,8 @@ if __name__ == "__main__":
 
     print os.getcwd()
 
-    #data = wave.open(os.path.join(os.path.dirname(__file__), 'test2.wav'))
-    data = wave.open('test/test2.wav')
+    data = wave.open(os.path.join(os.path.dirname(__file__), 'test2.wav'))
+    #data = wave.open('test/test.wav') #test/test2.wav')
     wav_duration = data.getnframes() * 1.0 / data.getframerate()
 
     import time
@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     end_time = time.time()
 
-    print x.get_nbest(10)
+    #print x.get_nbest(10)
 
     dec_duration = end_time - beg_time
 
@@ -39,3 +39,15 @@ if __name__ == "__main__":
     print 'decoding duration', dec_duration
 
     print 'rtf', wav_duration / dec_duration
+
+    x.finalize_decoding()
+
+    p, lat = x.get_lattice()
+
+    for state in lat.states:
+        cum = 0.0
+        for arc in state.arcs:
+            print x.get_word(arc.ilabel)
+        print
+
+

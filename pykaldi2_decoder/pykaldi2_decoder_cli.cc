@@ -26,10 +26,10 @@ int main(int argc, const char* const* argv) {
     KALDI_LOG << "Initialized.";
 
 
-    int32 num_chan = wave_data.Data().NumRows(), this_chan = 0;
-    if(this_chan != num_chan -1)
-        KALDI_ERR << "Wave should have only one channel";
-    SubVector<BaseFloat> waveform(wave_data.Data(), this_chan);
+//    int32 num_chan = wave_data.Data().NumRows(), this_chan = 0;
+//    if(this_chan != num_chan -1)
+//        KALDI_ERR << "Wave should have only one channel";
+    SubVector<BaseFloat> waveform(wave_data.Data(), 0);
 
     for(int k = 0; k < 1; k++) {
         decoder->Reset();
@@ -61,7 +61,6 @@ int main(int argc, const char* const* argv) {
         } while (decoded_now > 0);
 
         decoder->FinalizeDecoding();
-
     }
 
     std::cerr << "Done.";

@@ -34,6 +34,7 @@ namespace kaldi {
     }
 
     void PyKaldi2DecoderConfig::Register(ParseOptions *po) {
+        po->Register("model_type", &model_type_str, "Type of model. GMM/NNET2");
         po->Register("model", &model_rxfilename, "Accoustic model filename.");
         po->Register("hclg", &fst_rxfilename, "HCLG FST filename.");
         po->Register("words", &words_rxfilename, "Word to ID mapping filename.");
@@ -147,25 +148,38 @@ namespace kaldi {
         return blnReturn;
     }
 
-    bool PyKaldi2DecoderConfig::Check() {
+    bool PyKaldi2DecoderConfig::InitAndCheck() {
         bool res = true;
-        res |= OptionCheck(use_ivectors && cfg_ivector == "",
+
+        if(model_type_str == "gmm") {
+            model_type = GMM;
+        } else if(model_type_str == "nnet2") {
+            model_type = NNET2;
+        } else {
+            res = false;
+
+            KALDI_ERR << "You have to specify a valid model_type.";
+
+        }
+
+
+        res &= OptionCheck(use_ivectors && cfg_ivector == "",
                            "You have to specify --cfg_ivector if you want to use ivectors.");
-        res |= OptionCheck(use_cmvn && fcmvn_mat_rspecifier == "",
+        res &= OptionCheck(use_cmvn && fcmvn_mat_rspecifier == "",
                            "You have to specify --cfg_cmvn if you want to use CMVN.");
-        res |= OptionCheck(use_pitch && cfg_pitch == "",
+        res &= OptionCheck(use_pitch && cfg_pitch == "",
                            "You have to specify --cfg_pitch if you want to use pitch.");
 
-        res |= OptionCheck(model_rxfilename == "",
+        res &= OptionCheck(model_rxfilename == "",
                            "You have to specify --model.");
 
-        res |= OptionCheck(fst_rxfilename == "",
+        res &= OptionCheck(fst_rxfilename == "",
                            "You have to specify --hclg.");
 
-        res |= OptionCheck(words_rxfilename == "",
+        res &= OptionCheck(words_rxfilename == "",
                            "You have to specify --words.");
 
-        res |= OptionCheck(lda_mat_rspecifier == "",
+        res &= OptionCheck(lda_mat_rspecifier == "",
                            "You have to specify --mat_lda.");
 
         return res;

@@ -19,11 +19,13 @@
 namespace kaldi {
     class PyKaldi2DecoderConfig {
     public:
+        enum ModelType { None, GMM, NNET2 };
+
         PyKaldi2DecoderConfig();
         ~PyKaldi2DecoderConfig();
         void Register(ParseOptions *po);
         void LoadConfigs(const string cfg_file);
-        bool Check();
+        bool InitAndCheck();
 
         LatticeFasterDecoderConfig decoder_opts;
         nnet2::DecodableNnet2OnlineOptions decodable_opts;
@@ -39,6 +41,7 @@ namespace kaldi {
         Matrix<double> *cmvn_mat;
         OnlineIvectorExtractionInfo *ivector_extraction_info;
 
+        ModelType model_type;
         int32 bits_per_sample;
 
         bool use_ivectors;
@@ -67,6 +70,8 @@ namespace kaldi {
         template<typename C> void LoadConfig(string file_name, C *opts);
         bool FileExists(string strFilename);
         bool OptionCheck(bool cond, std::string fail_text);
+
+        string model_type_str;
     };
 }
 

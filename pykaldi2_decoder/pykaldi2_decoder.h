@@ -15,6 +15,7 @@
 #include "matrix/matrix-lib.h"
 #include "util/common-utils.h"
 #include "nnet2/online-nnet2-decodable.h"
+#include "online2/online-gmm-decodable.h"
 #include "online2/online-endpoint.h"
 #else
 namespace kaldi{
@@ -64,10 +65,11 @@ namespace kaldi {
         fst::StdFst *hclg_;
         LatticeFasterOnlineDecoder *decoder_;
         TransitionModel *trans_model_;
-        nnet2::AmNnet *am_;
+        nnet2::AmNnet *am_nnet2_;
+        AmDiagGmm *am_gmm_;
         fst::SymbolTable *words_;
         PyKaldi2DecoderConfig *config_;
-        nnet2::DecodableNnet2Online *decodable_;
+        DecodableInterface *decodable_;
 
         void InitTransformMatrices();
         void LoadDecoder();

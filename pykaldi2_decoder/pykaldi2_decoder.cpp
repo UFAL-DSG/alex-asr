@@ -10,7 +10,8 @@ namespace kaldi {
             hclg_(NULL),
             decoder_(NULL),
             trans_model_(NULL),
-            am_(NULL),
+            am_nnet2_(NULL),
+            am_gmm_(NULL),
             words_(NULL),
             config_(NULL),
             decodable_(NULL)
@@ -32,7 +33,8 @@ namespace kaldi {
         delete hclg_;
         delete decoder_;
         delete trans_model_;
-        delete am_;
+        delete am_nnet2_;
+        delete am_gmm_;
         delete words_;
         delete config_;
         delete decodable_;
@@ -44,7 +46,7 @@ namespace kaldi {
         config_ = new PyKaldi2DecoderConfig();
         config_->LoadConfigs("pykaldi.cfg");
 
-        if(!config_->Check()) {
+        if(!config_->InitAndCheck()) {
             KALDI_ERR << "Error when checking if the configuration is valid. "
                     "Please check your configuration.";
         }
@@ -58,9 +60,15 @@ namespace kaldi {
         trans_model_ = new TransitionModel();
         trans_model_->Read(ki.Stream(), binary);
 
-        KALDI_PARANOID_ASSERT(am_ == NULL);
-        am_ = new nnet2::AmNnet();
-        am_->Read(ki.Stream(), binary);
+        if(config_->model_type == PyKaldi2DecoderConfig::GMM) {
+            KALDI_PARANOID_ASSERT(am_gmm_ == NULL);
+            am_gmm_ = new AmDiagGmm();
+            am_gmm_->Read(ki.Stream(), binary);
+        } else if(config_->model_type == PyKaldi2DecoderConfig::NNET2) {
+            KALDI_PARANOID_ASSERT(am_nnet2_ == NULL);
+            am_nnet2_ = new nnet2::AmNnet();
+            am_nnet2_->Read(ki.Stream(), binary);
+        }
 
         KALDI_PARANOID_ASSERT(hclg_ == NULL);
         hclg_ = ReadDecodeGraph(config_->fst_rxfilename);
@@ -76,10 +84,22 @@ namespace kaldi {
         delete decodable_;
 
         feature_pipeline_ = new PyKaldi2FeaturePipeline(*config_);
-        decodable_ = new nnet2::DecodableNnet2Online(*am_,
-                                                     *trans_model_,
-                                                     config_->decodable_opts,
-                                                     feature_pipeline_->GetFeature());
+
+        if(config_->model_type == PyKaldi2DecoderConfig::GMM) {
+            decodable_ = new DecodableDiagGmmScaledOnline(*am_gmm_,
+                                                          *trans_model_,
+                                                          config_->decodable_opts.acoustic_scale,
+                                                          feature_pipeline_->GetFeature());
+        } else if(config_->model_type == PyKaldi2DecoderConfig::NNET2) {
+            decodable_ = new nnet2::DecodableNnet2Online(*am_nnet2_,
+                                                         *trans_model_,
+                                                         config_->decodable_opts,
+                                                         feature_pipeline_->GetFeature());
+        } else {
+            KALDI_ASSERT(false);  // This means the program is in invalid state.
+        }
+
+
 
         decoder_->InitDecoding();
     }
@@ -168,6 +188,7 @@ namespace kaldi {
             KALDI_ERR << "--determinize-lattice=false option is not supported at the moment";
 
         bool ok = decoder_->GetRawLattice(&raw_lat, end_of_utterance);
+        KALDI_LOG << ok;
 
         BaseFloat lat_beam = config_->decoder_opts.lattice_beam;
         DeterminizeLatticePhonePrunedWrapper(
