@@ -9,7 +9,8 @@ Online decoder for Kaldi NNET2 and GMM models with Python bindings.
   - All filenames specified in this config are relative to `model_dir`
 
 Example:
-<code>
+
+```
 --model_type=nnet2     # Supported model types are nnet2 (nnet2::AmNnet) and gmm (AmDiagGmm)
 --model=final.mdl      # Filename of the mdl file for the decoder.
 --hclg=HCLG.fst        # Filename of the fst file with decoding HCLG fst.
@@ -35,7 +36,7 @@ Example:
 --cfg_endpoint=cfg.endpoint
 --cfg_ivector=cfg.ivector
 --cfg_pitch=cfg.pitch
-</code>
+```
 
 # Credits
 
