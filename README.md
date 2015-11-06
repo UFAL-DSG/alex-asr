@@ -8,7 +8,7 @@ Online decoder for Kaldi NNET2 and GMM models with Python bindings.
   - It expects that a file called `pykaldi.cfg` is contained in it. This file specifies filenames of all other configs, and adheres to Kaldi configuration standards (i.e. one option per line in a text file).
   - All filenames specified in this config are relative to `model_dir`
 
-Example:
+Example of `pykaldi.cfg` that should reside in `model_dir`:
 
 ```
 --model_type=nnet2     # Supported model types are nnet2 (nnet2::AmNnet) and gmm (AmDiagGmm)
