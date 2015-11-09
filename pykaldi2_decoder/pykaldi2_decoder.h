@@ -59,6 +59,10 @@ namespace kaldi {
         bool EndpointDetected();
         void FinalizeDecoding();
         void Reset();
+        float FinalRelativeCost();
+        int32 NumFramesDecoded();
+        int32 TrailingSilenceLength();
+        void GetIvector(std::vector<float> *ivector);
     private:
         PyKaldi2FeaturePipeline *feature_pipeline_;
 

@@ -51,12 +51,25 @@ int main(int argc, const char* const* argv) {
 
             decoder->GetBestPath(&words, &prob);
 
+            vector<float> ivector;
+            decoder->GetIvector(&ivector);
+
+            std::cout << "trail_sil " << decoder->TrailingSilenceLength() << " ";
+            std::cout << "fin_cost " << decoder->FinalRelativeCost() << " ";
+            std::cout << "dec_frames " << decoder->NumFramesDecoded() << " ";
+
             std::cout << decoded_now << " hyp: ";
             for (int32 i = 0; i < words.size(); i++) {
                 std::string s = decoder->GetWord(words[i]);
                 std::cout << s << ' ';
             }
+
+            std::cout << " | Ivector: ";
+            for(int32 i = 0; i < ivector.size(); i++) {
+                std::cout << ivector[i] << " ";
+            }
             std::cout << std::endl;
+
 
         } while (decoded_now > 0);
 

@@ -27,7 +27,8 @@ if __name__ == "__main__":
 
         if n_decoded > 0:
             prob, word_ids = x.get_best_path()
-            print map(x.get_word, word_ids)  #x.endpoint_detected(),
+            ivec = x.get_ivector()
+            print map(x.get_word, word_ids), x.endpoint_detected(), ivec
 
     end_time = time.time()
 
@@ -39,6 +40,8 @@ if __name__ == "__main__":
     print 'decoding duration', dec_duration
 
     print 'rtf', wav_duration / dec_duration
+
+    exit(0)
 
     x.finalize_decoding()
 

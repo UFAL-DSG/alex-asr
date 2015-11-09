@@ -202,4 +202,31 @@ namespace kaldi {
     string PyKaldi2Decoder::GetWord(int word_id) {
         return words_->Find(word_id);
     }
+
+    float PyKaldi2Decoder::FinalRelativeCost() {
+        return decoder_->FinalRelativeCost();
+    }
+
+    int32 PyKaldi2Decoder::NumFramesDecoded() {
+        return decoder_->NumFramesDecoded();
+    }
+
+    int32 PyKaldi2Decoder::TrailingSilenceLength() {
+        return kaldi::TrailingSilenceLength(*trans_model_,
+                                            config_->endpoint_config.silence_phones,
+                                            *decoder_);
+    }
+
+    void PyKaldi2Decoder::GetIvector(std::vector<float> *ivector) {
+        OnlineIvectorFeature* ivector_ftr = feature_pipeline_->GetIvectorFeature();
+
+        Vector<BaseFloat> ivector_res;
+        ivector_res.Resize(ivector_ftr->Dim());
+        ivector_ftr->GetFrame(decoder_->NumFramesDecoded() - 1, &ivector_res);
+
+        BaseFloat *data = ivector_res.Data();
+        for(int32 i = 0; i < ivector_res.Dim(); i++) {
+            ivector->push_back(data[i]);
+        }
+    }
 } // namespace kaldi

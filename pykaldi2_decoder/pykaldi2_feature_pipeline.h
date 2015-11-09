@@ -16,6 +16,7 @@ namespace kaldi {
         void AcceptWaveform(BaseFloat sampling_rate,
                             const VectorBase<BaseFloat> &waveform);
         void InputFinished();
+        OnlineIvectorFeature* GetIvectorFeature();
     private:
         OnlineMfcc *mfcc_;
         OnlineCmvn *cmvn_;

@@ -26,6 +26,10 @@ cdef extern from "pykaldi2_decoder/pykaldi2_decoder.h" namespace "kaldi":
         bool EndpointDetected() except +
         void FinalizeDecoding() except +
         void Reset() except +
+        float FinalRelativeCost() except +
+        int NumFramesDecoded() except +
+        int TrailingSilenceLength() except +
+        void GetIvector(vector[float] *ivector) except +
 
 
 cdef class cPyKaldi2Decoder:
@@ -129,3 +133,20 @@ cdef class cPyKaldi2Decoder:
         If the (audio) data are kept they are the first input 
         data for new utterance."""
         self.thisptr.Reset()
+
+    def get_final_relative_cost(self):
+        return self.thisptr.FinalRelativeCost()
+
+    def get_num_frames_decoded(self):
+        return self.thisptr.NumFramesDecoded()
+
+    def get_trailing_silence_length(self):
+        return self.thisptr.TrailingSilenceLength()
+
+    def get_ivector(self):
+        cdef vector[float] ivec
+        self.thisptr.GetIvector(address(ivec))
+
+        ivector = [ivec[i] for i in xrange(ivec.size())]
+
+        return ivector

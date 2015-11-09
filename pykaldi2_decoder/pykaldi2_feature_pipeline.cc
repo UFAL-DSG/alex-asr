@@ -82,5 +82,9 @@ namespace kaldi {
     void PyKaldi2FeaturePipeline::InputFinished() {
         mfcc_->InputFinished();
     }
+
+    OnlineIvectorFeature *PyKaldi2FeaturePipeline::GetIvectorFeature() {
+        return ivector_;
+    }
 }
 
