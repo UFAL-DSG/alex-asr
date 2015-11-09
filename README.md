@@ -2,6 +2,14 @@
 
 Online decoder for Kaldi NNET2 and GMM models with Python bindings.
 
+# Build & Install
+
+```
+$ prepare_env.sh
+$ make py
+$ python setup.py install
+```
+
 # Config
 
   - The decoder takes one argument `model_dir` for initialization. It is a directory with the decoder model and its configuration.
