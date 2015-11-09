@@ -46,6 +46,29 @@ Example of `pykaldi.cfg` that should reside in `model_dir`:
 --cfg_pitch=pitch.cfg
 ```
 
+## Decoder configuration.
+https://github.com/kaldi-asr/kaldi/blob/master/src/decoder/lattice-faster-decoder.h#L69
+
+## Decodable configuration.
+https://github.com/kaldi-asr/kaldi/blob/master/src/nnet2/online-nnet2-decodable.h#L48
+
+## MFCC configuration
+https://github.com/kaldi-asr/kaldi/blob/master/src/feat/feature-mfcc.h#L63
+
+## CMVN configuration
+
+## Splice configuration
+
+## Endpoint configuration
+
+## IVector configuration
+
+## Pitch configuration
+
+
+
+## Endpointing
+
 # Credits
 
 Author: Lukas Zilka (lukas@zilka.me). Adapted from Ondra Platek's PyKaldi https://github.com/UFAL-DSG/pykaldi
