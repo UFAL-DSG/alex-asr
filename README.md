@@ -48,4 +48,4 @@ Example of `pykaldi.cfg` that should reside in `model_dir`:
 
 # Credits
 
-Adapted from Ondra Platek's PyKaldi https://github.com/UFAL-DSG/pykaldi
+Author: Lukas Zilka (lukas@zilka.me). Adapted from Ondra Platek's PyKaldi https://github.com/UFAL-DSG/pykaldi
