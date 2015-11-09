@@ -36,14 +36,14 @@ Example of `pykaldi.cfg` that should reside in `model_dir`:
 --bits_per_sample=16   # 8/16; How many bits per sample frame?
 
 # These parameters specify filenames of configuration of the particular parts of the decoder.
---cfg_decoder=cfg.decoder
---cfg_decodable=cfg.decodable
---cfg_mfcc=cfg.mfcc
---cfg_cmvn=cfg.cmvn
---cfg_splice=cfg.splice
---cfg_endpoint=cfg.endpoint
---cfg_ivector=cfg.ivector
---cfg_pitch=cfg.pitch
+--cfg_decoder=decoder.cfg
+--cfg_decodable=decodable.cfg
+--cfg_mfcc=mfcc.cfg
+--cfg_cmvn=cmvn.cfg
+--cfg_splice=splice.cfg
+--cfg_endpoint=endpoint.cfg
+--cfg_ivector=ivector.cfg
+--cfg_pitch=pitch.cfg
 ```
 
 # Credits
