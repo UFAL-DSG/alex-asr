@@ -13,7 +13,7 @@ make -C libs/kaldi/tools openfst OPENFST_VERSION=${OPENFST_VERSION}; echo "Insta
 
 (cd libs/kaldi/src; ./configure --shared)
 
-cp libs/kaldi/tools/openfst/lib/lib/libfst.so /usr/lib/
+cp libs/kaldi/tools/openfst/lib/libfst.so /usr/lib/
 
 make -C libs/kaldi/src
 
