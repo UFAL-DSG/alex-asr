@@ -9,12 +9,11 @@ mkdir libs
 git clone https://github.com/kaldi-asr/kaldi.git libs/kaldi
 git clone https://github.com/UFAL-DSG/pyfst.git libs/pyfst
 
-make -C libs/kaldi/tools  atlas ; echo "Installing atlas finished $?"
+make -C libs/kaldi/tools atlas
 (
     # Patch OpenFST makefile so that we can link with it statically.
     cd libs/kaldi/tools;
-    make openfst-${OPENFST_VERSION}/Makefile
-    sed -i "s/--enable-ngram-fsts/--enable-ngram-fsts --with-pic/g" openfst-${OPENFST_VERSION}/Makefile
+    sed -i "s/--enable-ngram-fsts/--enable-ngram-fsts --with-pic/g" Makefile
     make openfst
 )
 
