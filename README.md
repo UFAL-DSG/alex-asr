@@ -6,7 +6,7 @@ Online decoder for Kaldi NNET2 and GMM models with Python bindings.
 
 ```
 $ prepare_env.sh
-$ make py
+$ make
 $ python setup.py install
 ```
 
