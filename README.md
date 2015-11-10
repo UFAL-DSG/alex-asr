@@ -35,7 +35,7 @@ Example of `pykaldi.cfg` that should reside in `model_dir`:
                        # with configuration of the pitch extractor.
 --bits_per_sample=16   # 8/16; How many bits per sample frame?
 
-# These parameters specify filenames of configuration of the particular parts of the decoder.
+# These parameters specify filenames of configuration of the particular parts of the decoder. Detailed below.
 --cfg_decoder=decoder.cfg
 --cfg_decodable=decodable.cfg
 --cfg_mfcc=mfcc.cfg
@@ -47,27 +47,96 @@ Example of `pykaldi.cfg` that should reside in `model_dir`:
 ```
 
 ## Decoder configuration.
-https://github.com/kaldi-asr/kaldi/blob/master/src/decoder/lattice-faster-decoder.h#L69
+
+Example ``decoder.cfg``:
+```
+--max-active=7000
+--min-active=200
+--beam=15.0
+--lattice-beam=8.0
+```
+
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/decoder/lattice-faster-decoder.h#L69
+
 
 ## Decodable configuration.
-https://github.com/kaldi-asr/kaldi/blob/master/src/nnet2/online-nnet2-decodable.h#L48
+
+Example ``decodable.cfg``:
+```
+--acoustic-scale=0.1
+```
+
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/nnet2/online-nnet2-decodable.h#L48
 
 ## MFCC configuration
-https://github.com/kaldi-asr/kaldi/blob/master/src/feat/feature-mfcc.h#L63
 
-## CMVN configuration
+Example ``mfcc.cfg``:
+```
+--low-freq=128
+--high-freq=3800
+```
+
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/feature-mfcc.h#L63
+
+## Online CMVN configuration
+
+Online CMVN configuration is needed when you set ``--use_cmvn=true``.
+
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/online-feature.h#L176
 
 ## Splice configuration
 
+Example ``splice.cfg``:
+```
+--left-context=3
+--right-context=3
+```
+
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/online-feature.h#L384
+
 ## Endpoint configuration
+
+Endpointing configuration is needed if you intend to call ``EndpointDetected`` and ``TrailingSilenceLength`` functions of the ``PyKaldi2Decoder``.
+
+Example ``endpoint.cfg``:
+
+```
+--endpoint.silence_phones=1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23:24:25
+```
+
+https://github.com/kaldi-asr/kaldi/blob/master/src/online2/online-endpoint.h#L159
+
 
 ## IVector configuration
 
+Ivector configuration is needed if you set ``--use_ivectors=true``.
+
+Example ``ivector.cfg``:
+
+```
+--splice-config=ivector_extractor/splice_opts
+--cmvn-config=ivector_extractor/online_cmvn.conf
+--lda-matrix=ivector_extractor/final.mat
+--global-cmvn-stats=ivector_extractor/global_cmvn.stats
+--diag-ubm=ivector_extractor/final.dubm
+--ivector-extractor=ivector_extractor/final.ie
+--num-gselect=5
+--min-post=0.025
+--posterior-scale=0.1
+--max-remembered-frames=1000
+--max-count=100
+```
+
+https://github.com/kaldi-asr/kaldi/blob/master/src/online2/online-ivector-feature.h#L110
+
 ## Pitch configuration
 
+Pitch configuration is neede if you set ``--use_pitch=true``.
 
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/pitch-functions.h#L136
 
-## Endpointing
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/pitch-functions.h#L250
+
 
 # Credits
 
