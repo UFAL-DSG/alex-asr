@@ -20,7 +20,7 @@ make -C libs/kaldi/tools atlas
 (
     cd libs/kaldi/src;
     git checkout ${KALDI_REV}
-    ./configure --shared
+    ./configure --shared --use-cuda=no
 )
 
 make -C libs/kaldi/src
