@@ -7,10 +7,12 @@ from libc.stdlib cimport malloc, free
 from libcpp.vector cimport vector
 from libcpp cimport bool
 from libcpp.string cimport string
-cimport fst._fst
-cimport fst.libfst
-import fst
-from kaldi2.utils import lattice_to_nbest
+
+import alex_asr.fst
+cimport alex_asr.fst._fst
+cimport alex_asr.fst.libfst
+
+from alex_asr.utils import lattice_to_nbest
 
 
 cdef extern from "src/decoder.h" namespace "alex_asr":
@@ -19,7 +21,7 @@ cdef extern from "src/decoder.h" namespace "alex_asr":
         size_t Decode(int max_frames) except +
         void FrameIn(unsigned char *frame, size_t frame_len) except +
         bool GetBestPath(vector[int] *v_out, float *lik) except +
-        bool GetLattice(fst.libfst.LogVectorFst *fst_out, double *tot_lik) except +
+        bool GetLattice(alex_asr.fst.libfst.LogVectorFst *fst_out, double *tot_lik) except +
         string GetWord(int word_id) except +
         void InputFinished() except +
         bool EndpointDetected() except +
@@ -118,9 +120,9 @@ cdef class Decoder:
 
         """
         cdef double lik = -1
-        r = fst.LogVectorFst()
+        r = alex_asr.fst.LogVectorFst()
         if self.utt_decoded > 0:
-            self.thisptr.GetLattice((<fst._fst.LogVectorFst?>r).fst, address(lik))
+            self.thisptr.GetLattice((<alex_asr.fst._fst.LogVectorFst?>r).fst, address(lik))
         self.utt_decoded = 0
         return (lik, r)
 

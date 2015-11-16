@@ -18,7 +18,6 @@ if python_version < (2, 7):
     new_27 = ['ordereddict', 'argparse']
     install_requires.extend(new_27)
 
-
 extra_link_args = []
 extra_objects = environ.get('ADDLIBS', '').split()
 extra_compile_args = environ.get('CXXFLAGS', '').split()
@@ -49,6 +48,13 @@ ext_modules.append(Extension('alex_asr.decoders',
                              extra_objects=extra_objects,
                              sources=['alex_asr/decoder.pyx', ],
                              ))
+ext_modules.append(Extension(name='alex_asr.fst._fst',
+                                 extra_compile_args=extra_compile_args + ['-std=c++11'],
+                                 extra_link_args=extra_link_args,
+                                 sources=['alex_asr/fst/_fst.pyx'],
+                                 language='c++'
+                                 )
+)
 
 
 setup(
