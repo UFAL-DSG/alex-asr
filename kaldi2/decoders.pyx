@@ -13,7 +13,6 @@ import fst
 from kaldi2.utils import lattice_to_nbest
 
 
-
 cdef extern from "pykaldi2_decoder/pykaldi2_decoder.h" namespace "kaldi":
     cdef cppclass PyKaldi2Decoder:
         PyKaldi2Decoder(string model_path) except +
@@ -32,11 +31,10 @@ cdef extern from "pykaldi2_decoder/pykaldi2_decoder.h" namespace "kaldi":
         void GetIvector(vector[float] *ivector) except +
 
 
+# NOTE: Function signatures as the first line of the docstring are needed in order for
+# sphinx to generate nice documentation.
 cdef class Decoder:
-
-    """
-    Speech recognition decoder.
-    """
+    """Speech recognition decoder."""
 
     cdef PyKaldi2Decoder * thisptr
     cdef long fs
@@ -44,7 +42,8 @@ cdef class Decoder:
     cdef utt_decoded
 
     def __init__(self, model_path, fs=16000, nchan=1, bits=16):
-        """Initialise recognizer with audio input stream parameters.
+        """__init__(self, model_path, fs=16000, nchan=1, bits=16)
+        Initialise recognizer with audio input stream parameters.
 
         Args:
             model_path (str): Path where the speech recognition models are stored.
@@ -58,7 +57,8 @@ cdef class Decoder:
         del self.thisptr
 
     def decode(self, max_frames=10):
-        """Proceed with decoding the audio.
+        """decode(self, max_frames=10)
+        Proceed with decoding the audio.
 
         Args:
             max_frames (int): Maximum number of frames to decode.
@@ -71,7 +71,8 @@ cdef class Decoder:
         return new_dec
 
     def accept_audio(self, bytes frame_str):
-        """Insert given buffer of audio to the decoder for decoding.
+        """accept_audio(self, bytes frame_str)
+        Insert given buffer of audio to the decoder for decoding.
 
         The buffer is interpreted according to the `bits` configuration parameter of the loaded model.
         Usually `bits=16` therefore bytes is interpreted as an array of 16bit little-endian signed integers.
@@ -85,7 +86,8 @@ cdef class Decoder:
         self.thisptr.FrameIn(frame_str, num_samples)
 
     def get_best_path(self):
-        """Get current 1-best decoding hypothesis.
+        """get_best_path(self)
+        Get current 1-best decoding hypothesis.
 
         Returns:
             tuple: (hypothesis likelihood, list of word id's)
@@ -97,7 +99,8 @@ cdef class Decoder:
         return (lik, words)
 
     def get_nbest(self, n=1):
-        """Get n best decoding hypotheses (from word posterior lattice).
+        """get_nbest(self, n=1)
+        Get n best decoding hypotheses (from word posterior lattice).
 
         Args:
             n (int): How many hypotheses to generate.
@@ -109,7 +112,8 @@ cdef class Decoder:
         return lattice_to_nbest(lat, n)
 
     def get_lattice(self):
-        """Get word posterior lattice and its likelihood.
+        """get_lattice(self)
+        Get word posterior lattice and its likelihood.
 
         NOTE: It may last 100 ms so consideration is needed when used in a timing-critical applications.
 
@@ -125,7 +129,8 @@ cdef class Decoder:
         return (lik, r)
 
     def get_word(self, word_id):
-        """Get word string form given word id.
+        """get_word(self, word_id)
+        Get word string form given word id.
 
         Args:
             word_id (int): Word id (e.g. as returned by get_best_path).
@@ -136,7 +141,8 @@ cdef class Decoder:
         return self.thisptr.GetWord(word_id)
 
     def endpoint_detected(self):
-        """Has an endpoint been detected?
+        """endpoint_detected(self)
+        Has an endpoint been detected?
 
         Configuration of endpointing is loaded from the model.
 
@@ -146,7 +152,8 @@ cdef class Decoder:
         return self.thisptr.EndpointDetected()
 
     def get_trailing_silence_length(self):
-        """Get number of consecutive silence frames from the end of utterance.
+        """get_trailing_silence_length(self)
+        Get number of consecutive silence frames from the end of utterance.
 
         Returns:
             int number of frames in the best hypothesis, for which silence
@@ -155,19 +162,23 @@ cdef class Decoder:
         return self.thisptr.TrailingSilenceLength()
 
     def input_finished(self):
-        """Signalize to the decoder that no more input will be added."""
+        """input_finished(self)
+        Signalize to the decoder that no more input will be added."""
         self.thisptr.InputFinished()
 
     def finalize_decoding(self):
-        """Finalize the decoding and prepare the internal representation for lattice extration."""
+        """finalize_decoding(self)
+        Finalize the decoding and prepare the internal representation for lattice extration."""
         self.thisptr.FinalizeDecoding()
 
     def reset(self):
-        """Reset the decoder for decoding a new utterance."""
+        """reset(self)
+        Reset the decoder for decoding a new utterance."""
         self.thisptr.Reset()
 
     def get_final_relative_cost(self):
-        """Get the relative cost of the decoding so far of the final states.
+        """get_final_relative_cost(self)
+        Get the relative cost of the decoding so far of the final states.
 
         Returns:
             float cost
@@ -175,7 +186,8 @@ cdef class Decoder:
         return self.thisptr.FinalRelativeCost()
 
     def get_num_frames_decoded(self):
-        """Get number of frames decoded so far.
+        """get_num_frames_decoded(self)
+        Get number of frames decoded so far.
 
         Returns:
             int number of frames decoded
@@ -183,7 +195,8 @@ cdef class Decoder:
         return self.thisptr.NumFramesDecoded()
 
     def get_ivector(self):
-        """Get Ivector of the latest decoded frame.
+        """get_ivector(self)
+        Get Ivector of the latest decoded frame.
 
         Ivector extraction is specified in the model configuration. If the model does not use Ivectors
         this function does not return anything.
