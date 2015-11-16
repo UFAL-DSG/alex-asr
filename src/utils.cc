@@ -19,9 +19,11 @@
 #include "fstext/lattice-utils-inl.h"
 #include "fstext/lattice-weight.h"
 #include "lat/lattice-functions.h"
-#include "pykaldi2_decoder/utils.h"
+#include "src/utils.h"
 
-namespace kaldi {
+using namespace kaldi;
+
+namespace alex_asr {
 
 // instantiate the template used below here
 // TODO
@@ -140,4 +142,4 @@ namespace kaldi {
         return file_name.substr(0,found);
     }
 
-} // namespace kaldi
+}

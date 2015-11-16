@@ -1,11 +1,12 @@
-#include "pykaldi2_decoder.h"
-#include "pykaldi2_decoder/utils.h"
+#include "src/decoder.h"
+#include "src/utils.h"
 
 #include "online2/onlinebin-util.h"
 
+using namespace kaldi;
 
-namespace kaldi {
-    PyKaldi2Decoder::PyKaldi2Decoder(const string model_path) :
+namespace alex_asr {
+    Decoder::Decoder(const string model_path) :
             feature_pipeline_(NULL),
             hclg_(NULL),
             decoder_(NULL),
@@ -28,7 +29,7 @@ namespace kaldi {
         KALDI_VLOG(2) << "Decoder is successfully initialized.";
     }
 
-    PyKaldi2Decoder::~PyKaldi2Decoder() {
+    Decoder::~Decoder() {
         delete feature_pipeline_;
         delete hclg_;
         delete decoder_;
@@ -40,10 +41,10 @@ namespace kaldi {
         delete decodable_;
     }
 
-    void PyKaldi2Decoder::ParseConfig() {
+    void Decoder::ParseConfig() {
         KALDI_PARANOID_ASSERT(config_ == NULL);
 
-        config_ = new PyKaldi2DecoderConfig();
+        config_ = new DecoderConfig();
         config_->LoadConfigs("pykaldi.cfg");
 
         if(!config_->InitAndCheck()) {
@@ -52,7 +53,7 @@ namespace kaldi {
         }
     }
 
-    void PyKaldi2Decoder::LoadDecoder() {
+    void Decoder::LoadDecoder() {
         bool binary;
         Input ki(config_->model_rxfilename, &binary);
 
@@ -60,11 +61,11 @@ namespace kaldi {
         trans_model_ = new TransitionModel();
         trans_model_->Read(ki.Stream(), binary);
 
-        if(config_->model_type == PyKaldi2DecoderConfig::GMM) {
+        if(config_->model_type == DecoderConfig::GMM) {
             KALDI_PARANOID_ASSERT(am_gmm_ == NULL);
             am_gmm_ = new AmDiagGmm();
             am_gmm_->Read(ki.Stream(), binary);
-        } else if(config_->model_type == PyKaldi2DecoderConfig::NNET2) {
+        } else if(config_->model_type == DecoderConfig::NNET2) {
             KALDI_PARANOID_ASSERT(am_nnet2_ == NULL);
             am_nnet2_ = new nnet2::AmNnet();
             am_nnet2_->Read(ki.Stream(), binary);
@@ -79,18 +80,18 @@ namespace kaldi {
         words_ = fst::SymbolTable::ReadText(config_->words_rxfilename);
     }
 
-    void PyKaldi2Decoder::Reset() {
+    void Decoder::Reset() {
         delete feature_pipeline_;
         delete decodable_;
 
-        feature_pipeline_ = new PyKaldi2FeaturePipeline(*config_);
+        feature_pipeline_ = new FeaturePipeline(*config_);
 
-        if(config_->model_type == PyKaldi2DecoderConfig::GMM) {
+        if(config_->model_type == DecoderConfig::GMM) {
             decodable_ = new DecodableDiagGmmScaledOnline(*am_gmm_,
                                                           *trans_model_,
                                                           config_->decodable_opts.acoustic_scale,
                                                           feature_pipeline_->GetFeature());
-        } else if(config_->model_type == PyKaldi2DecoderConfig::NNET2) {
+        } else if(config_->model_type == DecoderConfig::NNET2) {
             decodable_ = new nnet2::DecodableNnet2Online(*am_nnet2_,
                                                          *trans_model_,
                                                          config_->decodable_opts,
@@ -104,17 +105,17 @@ namespace kaldi {
         decoder_->InitDecoding();
     }
 
-    bool PyKaldi2Decoder::EndpointDetected() {
+    bool Decoder::EndpointDetected() {
         return kaldi::EndpointDetected(config_->endpoint_config, *trans_model_,
                                        config_->mfcc_opts.frame_opts.frame_shift_ms * 1.0e-03f,
                                        *decoder_);
     }
 
-    void PyKaldi2Decoder::FrameIn(VectorBase<BaseFloat> *waveform_in) {
+    void Decoder::FrameIn(VectorBase<BaseFloat> *waveform_in) {
         feature_pipeline_->AcceptWaveform(config_->mfcc_opts.frame_opts.samp_freq, *waveform_in);
     }
 
-    void PyKaldi2Decoder::FrameIn(unsigned char *buffer, int32 buffer_length) {
+    void Decoder::FrameIn(unsigned char *buffer, int32 buffer_length) {
         int n_frames = buffer_length / (config_->bits_per_sample / 8);
 
         Vector<BaseFloat> waveform(n_frames);
@@ -145,22 +146,22 @@ namespace kaldi {
         this->FrameIn(&waveform);
     }
 
-    void PyKaldi2Decoder::InputFinished() {
+    void Decoder::InputFinished() {
         feature_pipeline_->InputFinished();
     }
 
-    int32 PyKaldi2Decoder::Decode(int32 max_frames) {
+    int32 Decoder::Decode(int32 max_frames) {
         int32 decoded = decoder_->NumFramesDecoded();
         decoder_->AdvanceDecoding(decodable_, max_frames);
 
         return decoder_->NumFramesDecoded() - decoded;
     }
 
-    void PyKaldi2Decoder::FinalizeDecoding() {
+    void Decoder::FinalizeDecoding() {
         decoder_->FinalizeDecoding();
     }
 
-    bool PyKaldi2Decoder::GetBestPath(std::vector<int> *out_words, BaseFloat *prob) {
+    bool Decoder::GetBestPath(std::vector<int> *out_words, BaseFloat *prob) {
         *prob = -1.0f;
 
         Lattice lat;
@@ -178,7 +179,7 @@ namespace kaldi {
         return ok;
     }
 
-    bool PyKaldi2Decoder::GetLattice(fst::VectorFst<fst::LogArc> *fst_out,
+    bool Decoder::GetLattice(fst::VectorFst<fst::LogArc> *fst_out,
                                      double *tot_lik, bool end_of_utterance) {
         CompactLattice lat;
         Lattice raw_lat;
@@ -200,19 +201,19 @@ namespace kaldi {
         return ok;
     }
 
-    string PyKaldi2Decoder::GetWord(int word_id) {
+    string Decoder::GetWord(int word_id) {
         return words_->Find(word_id);
     }
 
-    float PyKaldi2Decoder::FinalRelativeCost() {
+    float Decoder::FinalRelativeCost() {
         return decoder_->FinalRelativeCost();
     }
 
-    int32 PyKaldi2Decoder::NumFramesDecoded() {
+    int32 Decoder::NumFramesDecoded() {
         return decoder_->NumFramesDecoded();
     }
 
-    int32 PyKaldi2Decoder::TrailingSilenceLength() {
+    int32 Decoder::TrailingSilenceLength() {
         if(config_->endpoint_config.silence_phones == "") {
             KALDI_WARN << "Trying to get training silence length for a model that does not have"
                           "silence phones configured.";
@@ -224,7 +225,7 @@ namespace kaldi {
         }
     }
 
-    void PyKaldi2Decoder::GetIvector(std::vector<float> *ivector) {
+    void Decoder::GetIvector(std::vector<float> *ivector) {
         if(config_->use_ivectors) {
             KALDI_WARN << "Trying to get an Ivector for a model that does not have Ivectors.";
         } else {
@@ -241,13 +242,13 @@ namespace kaldi {
         }
     }
 
-    void PyKaldi2Decoder::SetBitsPerSample(int n_bits) {
+    void Decoder::SetBitsPerSample(int n_bits) {
         KALDI_ASSERT(n_bits % 8 == 0);
 
         config_->bits_per_sample = n_bits;
     }
 
-    int PyKaldi2Decoder::GetBitsPerSample() {
+    int Decoder::GetBitsPerSample() {
         return config_->bits_per_sample;
     }
-} // namespace kaldi
+}

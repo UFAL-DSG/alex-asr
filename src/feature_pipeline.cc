@@ -1,11 +1,9 @@
-//
-// Created by zilka on 11/5/15.
-//
+#include "feature_pipeline.h"
 
-#include "pykaldi2_decoder/pykaldi2_feature_pipeline.h"
+using namespace kaldi;
 
-namespace kaldi {
-    PyKaldi2FeaturePipeline::PyKaldi2FeaturePipeline(PyKaldi2DecoderConfig &config) :
+namespace alex_asr {
+    FeaturePipeline::FeaturePipeline(DecoderConfig &config) :
         mfcc_(NULL),
         cmvn_(NULL),
         cmvn_state_(NULL),
@@ -57,7 +55,7 @@ namespace kaldi {
         final_feature_ = prev_feature;
     }
 
-    PyKaldi2FeaturePipeline::~PyKaldi2FeaturePipeline() {
+    FeaturePipeline::~FeaturePipeline() {
         delete mfcc_;
         delete cmvn_;
         delete cmvn_state_;
@@ -70,20 +68,20 @@ namespace kaldi {
         delete pitch_append_;
     }
 
-    OnlineFeatureInterface *PyKaldi2FeaturePipeline::GetFeature() {
+    OnlineFeatureInterface *FeaturePipeline::GetFeature() {
         return final_feature_;
     }
 
-    void PyKaldi2FeaturePipeline::AcceptWaveform(BaseFloat sampling_rate,
+    void FeaturePipeline::AcceptWaveform(BaseFloat sampling_rate,
                                                  const VectorBase<BaseFloat> &waveform) {
         mfcc_->AcceptWaveform(sampling_rate, waveform);
     }
 
-    void PyKaldi2FeaturePipeline::InputFinished() {
+    void FeaturePipeline::InputFinished() {
         mfcc_->InputFinished();
     }
 
-    OnlineIvectorFeature *PyKaldi2FeaturePipeline::GetIvectorFeature() {
+    OnlineIvectorFeature *FeaturePipeline::GetIvectorFeature() {
         return ivector_;
     }
 }

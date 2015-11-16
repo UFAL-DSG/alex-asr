@@ -1,11 +1,8 @@
-//
-// Created by zilka on 11/5/15.
-//
+#include "src/decoder_config.h"
+using namespace kaldi;
 
-#include "pykaldi2_decoder/pykaldi2_decoder_config.h"
-
-namespace kaldi {
-    PyKaldi2DecoderConfig::PyKaldi2DecoderConfig() :
+namespace alex_asr {
+    DecoderConfig::DecoderConfig() :
             lda_mat(NULL),
             cmvn_mat(NULL),
             ivector_extraction_info(NULL),
@@ -27,13 +24,13 @@ namespace kaldi {
         splice_opts.right_context = 3;
     }
 
-    PyKaldi2DecoderConfig::~PyKaldi2DecoderConfig() {
+    DecoderConfig::~DecoderConfig() {
         delete lda_mat;
         delete cmvn_mat;
         delete ivector_extraction_info;
     }
 
-    void PyKaldi2DecoderConfig::Register(ParseOptions *po) {
+    void DecoderConfig::Register(ParseOptions *po) {
         po->Register("model_type", &model_type_str, "Type of model. GMM/NNET2");
         po->Register("model", &model_rxfilename, "Accoustic model filename.");
         po->Register("hclg", &fst_rxfilename, "HCLG FST filename.");
@@ -55,7 +52,7 @@ namespace kaldi {
         po->Register("cfg_pitch", &cfg_pitch, "");
     }
 
-    void PyKaldi2DecoderConfig::LoadConfigs(const string cfg_file) {
+    void DecoderConfig::LoadConfigs(const string cfg_file) {
         std::string model_path("");
 
         ParseOptions po("");
@@ -77,7 +74,7 @@ namespace kaldi {
         InitAux();
     }
 
-    void PyKaldi2DecoderConfig::InitAux() {
+    void DecoderConfig::InitAux() {
         LoadLDA();
 
         if (use_cmvn) {
@@ -89,7 +86,7 @@ namespace kaldi {
         }
     }
 
-    void PyKaldi2DecoderConfig::LoadLDA() {
+    void DecoderConfig::LoadLDA() {
         KALDI_VLOG(2) << "Loading LDA matrix.";
         bool binary_in;
         Input ki(lda_mat_rspecifier, &binary_in);
@@ -99,7 +96,7 @@ namespace kaldi {
         lda_mat->Read(ki.Stream(), binary_in);
     }
 
-    void PyKaldi2DecoderConfig::LoadCMVN() {
+    void DecoderConfig::LoadCMVN() {
         KALDI_VLOG(2) << "Loading global CMVN stats.";
         bool binary_in;
         Input ki(fcmvn_mat_rspecifier, &binary_in);
@@ -109,13 +106,13 @@ namespace kaldi {
         cmvn_mat->Read(ki.Stream(), binary_in);
     }
 
-    void PyKaldi2DecoderConfig::LoadIvector() {
+    void DecoderConfig::LoadIvector() {
         KALDI_LOG << "Loading IVector extraction info.";
         ivector_extraction_info = new OnlineIvectorExtractionInfo(ivector_config);
     }
 
     template<typename C>
-    void PyKaldi2DecoderConfig::LoadConfig(string file_name, C *opts) {
+    void DecoderConfig::LoadConfig(string file_name, C *opts) {
         if (FileExists(file_name)) {
             ReadConfigFromFile(file_name, opts);
             KALDI_VLOG(2) << "Config loaded: " << file_name;
@@ -124,7 +121,7 @@ namespace kaldi {
         }
     }
 
-    bool PyKaldi2DecoderConfig::FileExists(string strFilename) {
+    bool DecoderConfig::FileExists(string strFilename) {
         struct stat stFileInfo;
         bool blnReturn;
         int intStat;
@@ -148,7 +145,7 @@ namespace kaldi {
         return blnReturn;
     }
 
-    bool PyKaldi2DecoderConfig::InitAndCheck() {
+    bool DecoderConfig::InitAndCheck() {
         bool res = true;
 
         if(model_type_str == "gmm") {
@@ -185,7 +182,7 @@ namespace kaldi {
         return res;
     }
 
-    bool PyKaldi2DecoderConfig::OptionCheck(bool cond, std::string fail_text) {
+    bool DecoderConfig::OptionCheck(bool cond, std::string fail_text) {
         if (cond) {
             KALDI_ERR << fail_text;
             return false;

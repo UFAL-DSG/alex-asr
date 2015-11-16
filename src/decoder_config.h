@@ -1,5 +1,5 @@
-#ifndef PYKALDI_PYKALDI2_DECODER_CONFIG_H
-#define PYKALDI_PYKALDI2_DECODER_CONFIG_H
+#ifndef ALEX_ASR_DECODER_CONFIG_H_
+#define ALEX_ASR_DECODER_CONFIG_H_
 
 #include <sys/stat.h>
 
@@ -12,17 +12,17 @@
 #include "online2/online-endpoint.h"
 #include "online2/online-ivector-feature.h"
 #include "util/stl-utils.h"
-#include "pykaldi2_decoder/utils.h"
+#include "src/utils.h"
 
+using namespace kaldi;
 
-
-namespace kaldi {
-    class PyKaldi2DecoderConfig {
+namespace alex_asr {
+    class DecoderConfig {
     public:
         enum ModelType { None, GMM, NNET2 };
 
-        PyKaldi2DecoderConfig();
-        ~PyKaldi2DecoderConfig();
+        DecoderConfig();
+        ~DecoderConfig();
         void Register(ParseOptions *po);
         void LoadConfigs(const string cfg_file);
         bool InitAndCheck();

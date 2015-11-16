@@ -5,12 +5,13 @@
 #include <fstream>
 
 #include "feat/wave-reader.h"
-#include "pykaldi2_decoder/pykaldi2_decoder.h"
+#include "src/decoder.h"
 
 using namespace kaldi;
+using namespace alex_asr;
 
 int main(int argc, const char* const* argv) {
-    PyKaldi2Decoder* decoder = new PyKaldi2Decoder(argv[2]);
+    Decoder * decoder = new Decoder(argv[2]);
 
     WaveData wave_data;
 

@@ -96,7 +96,7 @@ Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/online-feature.
 
 ## Endpoint configuration
 
-Endpointing configuration is needed if you intend to call ``EndpointDetected`` and ``TrailingSilenceLength`` functions of the ``PyKaldi2Decoder``.
+Endpointing configuration is needed if you intend to call ``EndpointDetected`` and ``TrailingSilenceLength`` functions of the ``Decoder``.
 
 Example ``endpoint.cfg``:
 

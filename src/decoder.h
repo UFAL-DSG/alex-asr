@@ -1,15 +1,12 @@
-#ifndef PYKALDI2_DECODER_H_
-#define PYKALDI2_DECODER_H_
+#ifndef ALEX_ASR_DECODER_
+#define ALEX_ASR_DECODER_
 #include <vector>
 #include <memory>
 #include "fst/fst-decl.h"
 #include "base/kaldi-types.h"
 
-// We have to do this hack with NO_KALDI_HEADERS, because Cython cannot compile
-// with Kaldi headers, because of redefinition of unordered_map.
-#ifndef NO_KALDI_HEADERS
-#include "pykaldi2_decoder/pykaldi2_decoder_config.h"
-#include "pykaldi2_decoder/pykaldi2_feature_pipeline.h"
+#include "src/decoder_config.h"
+#include "src/feature_pipeline.h"
 
 #include "feat/online-feature.h"
 #include "matrix/matrix-lib.h"
@@ -17,37 +14,15 @@
 #include "nnet2/online-nnet2-decodable.h"
 #include "online2/online-gmm-decodable.h"
 #include "online2/online-endpoint.h"
-#else
-namespace kaldi{
-    class PyKaldi2FeaturePipeline;
-    class PyKaldi2DecoderImpl;
-
-    class TransitionModel;
-    namespace nnet2 {
-      class DecodableNnet2Online;
-      struct DecodableNnet2OnlineOptions;
-      class AmNnet;
-    }
-    class LatticeFasterOnlineDecoder;
-    struct LatticeFasterDecoderConfig;
-    struct OnlineLatgenRecogniserConfig;
-    template<typename > class VectorBase;
-}
-
-class PyKaldi2DecoderConfig;
-#endif
 
 
+using namespace kaldi;
 
-namespace kaldi {
-
-/// \addtogroup online_latgen 
-/// @{
-
-    class PyKaldi2Decoder {
+namespace alex_asr {
+    class Decoder {
     public:
-        PyKaldi2Decoder(const string model_path);
-        ~PyKaldi2Decoder();
+        Decoder(const string model_path);
+        ~Decoder();
 
         int32 Decode(int32 max_frames);
         void FrameIn(unsigned char *buffer, int32 buffer_length);
@@ -66,7 +41,7 @@ namespace kaldi {
         void SetBitsPerSample(int n_bits);
         int GetBitsPerSample();
     private:
-        PyKaldi2FeaturePipeline *feature_pipeline_;
+        FeaturePipeline *feature_pipeline_;
 
         fst::StdFst *hclg_;
         LatticeFasterOnlineDecoder *decoder_;
@@ -74,7 +49,7 @@ namespace kaldi {
         nnet2::AmNnet *am_nnet2_;
         AmDiagGmm *am_gmm_;
         fst::SymbolTable *words_;
-        PyKaldi2DecoderConfig *config_;
+        DecoderConfig *config_;
         DecodableInterface *decodable_;
 
         void InitTransformMatrices();

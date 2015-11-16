@@ -29,6 +29,7 @@
 #include <fstream>
 #endif // DEBUG
 
+using namespace kaldi;
 
 namespace fst {
     template<class Float>
@@ -37,7 +38,7 @@ namespace fst {
     }
 }
 
-namespace kaldi {
+namespace alex_asr {
 
     /// \addtogroup online_latgen_utils
     /// @{

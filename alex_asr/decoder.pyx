@@ -13,9 +13,9 @@ import fst
 from kaldi2.utils import lattice_to_nbest
 
 
-cdef extern from "pykaldi2_decoder/pykaldi2_decoder.h" namespace "kaldi":
-    cdef cppclass PyKaldi2Decoder:
-        PyKaldi2Decoder(string model_path) except +
+cdef extern from "src/decoder.h" namespace "alex_asr":
+    cdef cppclass _Decoder "alex_asr::Decoder":
+        _Decoder(string model_path) except +
         size_t Decode(int max_frames) except +
         void FrameIn(unsigned char *frame, size_t frame_len) except +
         bool GetBestPath(vector[int] *v_out, float *lik) except +
@@ -38,7 +38,7 @@ cdef extern from "pykaldi2_decoder/pykaldi2_decoder.h" namespace "kaldi":
 cdef class Decoder:
     """Speech recognition decoder."""
 
-    cdef PyKaldi2Decoder * thisptr
+    cdef _Decoder * thisptr
     cdef utt_decoded
 
     def __init__(self, model_path):
@@ -48,7 +48,7 @@ cdef class Decoder:
         Args:
             model_path (str): Path where the speech recognition models are stored.
         """
-        self.thisptr = new PyKaldi2Decoder(model_path)
+        self.thisptr = new _Decoder(model_path)
         self.utt_decoded = 0
 
     def __dealloc__(self):

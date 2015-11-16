@@ -1,4 +1,4 @@
-LIBNAME = pykaldi2
+LIBNAME = alex_asr
 
 KALDI_DIR = libs/kaldi
 PYFST_DIR = libs/pyfst
@@ -12,9 +12,9 @@ RANLIB = ranlib
 FSTROOT = $(KALDI_DIR)/tools/openfst/
 LIBFILE = $(LIBNAME).a
 
-OBJFILES = pykaldi2_decoder/pykaldi2_decoder.o pykaldi2_decoder/utils.o pykaldi2_decoder/pykaldi2_feature_pipeline.o \
-           pykaldi2_decoder/pykaldi2_decoder_config.o pykaldi2_decoder/pykaldi2_decoder_cli.o
-BINFILES = pykaldi2_decoder/pykaldi2_decoder_cli
+OBJFILES = src/decoder.o src/utils.o src/feature_pipeline.o \
+           src/decoder_config.o src/decoder_cli.o
+BINFILES = src/decoder_cli
 
 CXXFLAGS = -msse -msse2 -Wall \
 	   -pthread \
@@ -30,12 +30,21 @@ CXXFLAGS = -msse -msse2 -Wall \
       -Wno-sign-compare -I. -fPIC
 
 ADDLIBS = $(FSTROOT)/src/lib/.libs/libfst.a \
-          $(KALDI_DIR)/src/online2/kaldi-online2.a $(KALDI_DIR)/src/ivector/kaldi-ivector.a \
-          $(KALDI_DIR)/src/nnet2/kaldi-nnet2.a $(KALDI_DIR)/src/lat/kaldi-lat.a \
-          $(KALDI_DIR)/src/decoder/kaldi-decoder.a  $(KALDI_DIR)/src/cudamatrix/kaldi-cudamatrix.a \
-          $(KALDI_DIR)/src/feat/kaldi-feat.a $(KALDI_DIR)/src/transform/kaldi-transform.a $(KALDI_DIR)/src/gmm/kaldi-gmm.a \
-          $(KALDI_DIR)/src/thread/kaldi-thread.a $(KALDI_DIR)/src/hmm/kaldi-hmm.a $(KALDI_DIR)/src/tree/kaldi-tree.a \
-          $(KALDI_DIR)/src/matrix/kaldi-matrix.a $(KALDI_DIR)/src/util/kaldi-util.a $(KALDI_DIR)/src/base/kaldi-base.a
+          $(KALDI_DIR)/src/online2/kaldi-online2.a \
+          $(KALDI_DIR)/src/ivector/kaldi-ivector.a \
+          $(KALDI_DIR)/src/nnet2/kaldi-nnet2.a \
+          $(KALDI_DIR)/src/lat/kaldi-lat.a \
+          $(KALDI_DIR)/src/decoder/kaldi-decoder.a  \
+          $(KALDI_DIR)/src/cudamatrix/kaldi-cudamatrix.a \
+          $(KALDI_DIR)/src/feat/kaldi-feat.a \
+          $(KALDI_DIR)/src/transform/kaldi-transform.a \
+          $(KALDI_DIR)/src/gmm/kaldi-gmm.a \
+          $(KALDI_DIR)/src/thread/kaldi-thread.a \
+          $(KALDI_DIR)/src/hmm/kaldi-hmm.a \
+          $(KALDI_DIR)/src/tree/kaldi-tree.a \
+          $(KALDI_DIR)/src/matrix/kaldi-matrix.a \
+          $(KALDI_DIR)/src/util/kaldi-util.a \
+          $(KALDI_DIR)/src/base/kaldi-base.a
 
 LDFLAGS = $(ADDLIBS) -llapack_atlas -lcblas -latlas -lf77blas -lm -lpthread -ldl
 
@@ -50,9 +59,9 @@ $(BINFILES): $(OBJFILES)
 
 py: $(LIBFILE)
 	CXXFLAGS="$(CXXFLAGS)" \
-	PYKALDI_ADDLIBS="pykaldi2.a $(ADDLIBS)" \
+	ADDLIBS="$(LIBNAME).a $(ADDLIBS)" \
 	LIBRARY_PATH=$(FSTROOT)/lib:$(FSTROOT)/lib/fst \
-	python setup.py build_ext build
+	    python setup.py build_ext build
 
 clean:
 	rm -rf build
