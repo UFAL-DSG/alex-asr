@@ -1,4 +1,4 @@
-# PyKaldi2
+# Alex-ASR
 
 Online decoder for Kaldi NNET2 and GMM models with Python bindings.
 
@@ -138,6 +138,20 @@ Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/pitch-functions
 Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/pitch-functions.h#L250
 
 
+# License
+
+Copyright 2015 Charles University in Prague
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
 # Credits
 
-Author: Lukas Zilka (lukas@zilka.me). Adapted from Ondra Platek's PyKaldi https://github.com/UFAL-DSG/pykaldi
+Author: Lukas Zilka (lukas@zilka.me).
+
+Adapted from Ondra Platek's PyKaldi https://github.com/UFAL-DSG/pykaldi
+
+Integrated Cython code from: https://github.com/vchahun/pyfst

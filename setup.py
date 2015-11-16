@@ -33,7 +33,7 @@ def kaldi_path(path):
 
 
 ext_modules = []
-ext_modules.append(Extension('alex_asr.decoders',
+ext_modules.append(Extension('alex_asr.decoder',
                              language='c++',
                              extra_compile_args=extra_compile_args,
                              extra_link_args=extra_link_args,
@@ -51,6 +51,13 @@ ext_modules.append(Extension('alex_asr.decoders',
 ext_modules.append(Extension(name='alex_asr.fst._fst',
                                  extra_compile_args=extra_compile_args + ['-std=c++11'],
                                  extra_link_args=extra_link_args,
+                                 include_dirs=[
+                                     '.',
+                                     kaldi_path('tools/openfst/include'),
+                                     kaldi_path('src'),
+                                     pyfst_dir,
+                                 ],
+                                 extra_objects=extra_objects,
                                  sources=['alex_asr/fst/_fst.pyx'],
                                  language='c++'
                                  )
@@ -59,7 +66,7 @@ ext_modules.append(Extension(name='alex_asr.fst._fst',
 
 setup(
     name='alex_asr',
-    packages=find_packages(exclude=["alex_asr/decoders.cpp"]),
+    packages=find_packages(exclude=["alex_asr/decoder.cpp"]),
     include_package_data=True,
     cmdclass={'build_ext': build_ext},
     version=version,
