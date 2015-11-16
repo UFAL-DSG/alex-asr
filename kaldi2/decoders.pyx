@@ -75,6 +75,9 @@ cdef class Decoder:
 
         The buffer is interpreted according to the `bits` configuration parameter of the loaded model.
         Usually `bits=16` therefore bytes is interpreted as an array of 16bit little-endian signed integers.
+
+        Args:
+            frame_str (bytes): Audio data.
         """
         num_bytes = (self.bits / 8)
         num_samples = len(frame_str) / num_bytes
@@ -82,10 +85,11 @@ cdef class Decoder:
         self.thisptr.FrameIn(frame_str, num_samples)
 
     def get_best_path(self):
-        """get_best_path(self)
+        """Get current 1-best decoding hypothesis.
 
-        Returns one-best ASR hypothesis
-        directly from internal representation."""
+        Returns:
+            tuple: (hypothesis likelihood, list of word id's)
+        """
         cdef vector[int] t
         cdef float lik
         self.thisptr.GetBestPath(address(t), address(lik))
@@ -93,17 +97,26 @@ cdef class Decoder:
         return (lik, words)
 
     def get_nbest(self, n=1):
-        """get_nbest(self, n=1)
+        """Get n best decoding hypotheses (from word posterior lattice).
 
-        Returns n-best list extracted from word posterior lattice."""
+        Args:
+            n (int): How many hypotheses to generate.
+
+        Returns:
+            list of hypotheses; each hypothesis is a tuple (hypothesis probability, list of word ids)
+        """
         lik, lat = self.get_lattice()
         return lattice_to_nbest(lat, n)
 
     def get_lattice(self):
-        """get_lattice(self)
+        """Get word posterior lattice and its likelihood.
 
-        Return word posterior lattice and its likelihood.
-        It may last non-trivial amount of time e.g. 100 ms."""
+        NOTE: It may last 100 ms so consideration is needed when used in a timing-critical applications.
+
+        Returns:
+            tuple: (lattice likelihood, lattice)
+
+        """
         cdef double lik = -1
         r = fst.LogVectorFst()
         if self.utt_decoded > 0:
@@ -112,40 +125,72 @@ cdef class Decoder:
         return (lik, r)
 
     def get_word(self, word_id):
+        """Get word string form given word id.
+
+        Args:
+            word_id (int): Word id (e.g. as returned by get_best_path).
+
+        Returns:
+            Word string (str).
+        """
         return self.thisptr.GetWord(word_id)
 
     def endpoint_detected(self):
+        """Has an endpoint been detected?
+
+        Configuration of endpointing is loaded from the model.
+
+        Returns:
+            bool whether endpoint was detected
+        """
         return self.thisptr.EndpointDetected()
 
+    def get_trailing_silence_length(self):
+        """Get number of consecutive silence frames from the end of utterance.
+
+        Returns:
+            int number of frames in the best hypothesis, for which silence
+            was consecutively decoded, from the end of utterance
+        """
+        return self.thisptr.TrailingSilenceLength()
+
     def input_finished(self):
+        """Signalize to the decoder that no more input will be added."""
         self.thisptr.InputFinished()
 
     def finalize_decoding(self):
-        """FinalizeDecoding(self)
-
-        It prepares internal representation for lattice extration."""
+        """Finalize the decoding and prepare the internal representation for lattice extration."""
         self.thisptr.FinalizeDecoding()
 
     def reset(self):
-        """reset(self, keep_buffer_data)
-
-        Resets the frame counter and prepare decoder for new utterance.
-        Dependently on reset_pipeline parameter the data are 
-        buffered data are cleared in the pipeline.
-        If the (audio) data are kept they are the first input 
-        data for new utterance."""
+        """Reset the decoder for decoding a new utterance."""
         self.thisptr.Reset()
 
     def get_final_relative_cost(self):
+        """Get the relative cost of the decoding so far of the final states.
+
+        Returns:
+            float cost
+        """
         return self.thisptr.FinalRelativeCost()
 
     def get_num_frames_decoded(self):
+        """Get number of frames decoded so far.
+
+        Returns:
+            int number of frames decoded
+        """
         return self.thisptr.NumFramesDecoded()
 
-    def get_trailing_silence_length(self):
-        return self.thisptr.TrailingSilenceLength()
-
     def get_ivector(self):
+        """Get Ivector of the latest decoded frame.
+
+        Ivector extraction is specified in the model configuration. If the model does not use Ivectors
+        this function does not return anything.
+
+        Returns:
+            list of floats with the ivector
+        """
         cdef vector[float] ivec
         self.thisptr.GetIvector(address(ivec))
 
