@@ -188,7 +188,6 @@ namespace kaldi {
             KALDI_ERR << "--determinize-lattice=false option is not supported at the moment";
 
         bool ok = decoder_->GetRawLattice(&raw_lat, end_of_utterance);
-        KALDI_LOG << ok;
 
         BaseFloat lat_beam = config_->decoder_opts.lattice_beam;
         DeterminizeLatticePhonePrunedWrapper(

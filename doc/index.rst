@@ -1,9 +1,9 @@
-.. alex-asr documentation master file, created by
+.. dialog-asr documentation master file, created by
    sphinx-quickstart on Mon Nov 16 08:58:43 2015.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to alex-asr's documentation!
+Welcome to dialog-asr's documentation!
 ====================================
 
 Contents:
@@ -11,6 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+.. autoclass:: kaldi2.decoders.Decoder
+    :members:
+
+    .. automethod:: kaldi2.decoders.Decoder.__init__
 
 
 Indices and tables

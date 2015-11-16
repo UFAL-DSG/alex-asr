@@ -32,11 +32,10 @@ cdef extern from "pykaldi2_decoder/pykaldi2_decoder.h" namespace "kaldi":
         void GetIvector(vector[float] *ivector) except +
 
 
-cdef class cPyKaldi2Decoder:
+cdef class Decoder:
 
     """
-    Python wrapper around C++ Kaldi PyKaldi2Decoder
-    which provides on-line speech recognition interface
+    Speech recognition decoder.
     """
 
     cdef PyKaldi2Decoder * thisptr
@@ -45,9 +44,10 @@ cdef class cPyKaldi2Decoder:
     cdef utt_decoded
 
     def __init__(self, model_path, fs=16000, nchan=1, bits=16):
-        """ __init__(self, fs=16000, nchan=1, bits=16)
-        
-        Initialise recognizer with audio input stream parameters.
+        """Initialise recognizer with audio input stream parameters.
+
+        Args:
+            model_path (str): Path where the speech recognition models are stored.
         """
         self.thisptr = new PyKaldi2Decoder(model_path)
         self.utt_decoded = 0
@@ -58,22 +58,24 @@ cdef class cPyKaldi2Decoder:
         del self.thisptr
 
     def decode(self, max_frames=10):
-        """decode(self, max_frames)
+        """Proceed with decoding the audio.
 
-        Decodes at maximum max_frames.
-        Return number of actually decoded frames in range [0, max_frames].
-        The decoding has RTF < 1.0 on common computer.
-        Consequently, for frames shift 10 ms the decoding
-        should be faster than 0.01 * max_frames seconds."""
+        Args:
+            max_frames (int): Maximum number of frames to decode.
+
+        Returns:
+            Number of decoded frames.
+        """
         new_dec = self.thisptr.Decode(max_frames)
         self.utt_decoded += new_dec
         return new_dec
 
-    def frame_in(self, bytes frame_str):
-        """frame_in(self, bytes frame_str, int num_samples)
+    def accept_audio(self, bytes frame_str):
+        """Insert given buffer of audio to the decoder for decoding.
 
-        Accepts input raw audio data and interpret them
-        according sample width (self.bits) settings"""
+        The buffer is interpreted according to the `bits` configuration parameter of the loaded model.
+        Usually `bits=16` therefore bytes is interpreted as an array of 16bit little-endian signed integers.
+        """
         num_bytes = (self.bits / 8)
         num_samples = len(frame_str) / num_bytes
         assert(num_samples * num_bytes == len(frame_str)), "Not align audio to for %d bits" % self.bits

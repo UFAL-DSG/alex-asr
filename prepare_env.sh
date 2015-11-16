@@ -6,9 +6,16 @@ KALDI_REV=ea37842dc1f4f03819acae27a6363c993ce5d12b
 
 mkdir libs
 
+# Get Kaldi.
 git clone https://github.com/kaldi-asr/kaldi.git libs/kaldi
+(
+    cd libs/kaldi/src;
+    git checkout ${KALDI_REV}
+)
+# Get PyFST
 git clone https://github.com/UFAL-DSG/pyfst.git libs/pyfst
 
+# Prepare Kaldi dependencies.
 make -C libs/kaldi/tools atlas
 (
     # Patch OpenFST makefile so that we can link with it statically.
@@ -17,15 +24,16 @@ make -C libs/kaldi/tools atlas
     make openfst
 )
 
+# Configure Kaldi.
 (
     cd libs/kaldi/src;
     git checkout ${KALDI_REV}
-    ./configure --shared --use-cuda=no
+    ./configure --use-cuda=no
 )
 
+# Build Kaldi.
 make -C libs/kaldi/src
 
-pip install pyyaml
 pushd libs/pyfst
 LIBRARY_PATH=${FSTDIR}/lib:${FSTDIR}/lib/fst CPLUS_INCLUDE_PATH=${FSTDIR}/include ${PYTHON} setup.py build_ext --inplace
 popd

@@ -58,8 +58,8 @@ if platform == 'darwin':
     library_dirs = []
     libraries = [kaldi_path('/tools/openfst/lib/libfst.a'), 'dl', 'm', 'pthread', ]
 else:
-    library_dirs = ['/usr/lib', kaldi_path('tools/openfst/lib')]
-    libraries = ['fst', 'lapack_atlas', 'cblas', 'atlas', 'f77blas', 'm', 'pthread', 'dl']
+    library_dirs = ['/usr/lib']
+    libraries = ['lapack_atlas', 'cblas', 'atlas', 'f77blas', 'm', 'pthread', 'dl']
 ext_modules.append(Extension('kaldi2.decoders',
                              language='c++',
                              extra_compile_args=extra_compile_args,
