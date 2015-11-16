@@ -21,7 +21,6 @@ if python_version < (2, 7):
 extra_link_args = []
 extra_objects = environ.get('ADDLIBS', '').split()
 extra_compile_args = environ.get('CXXFLAGS', '').split()
-pyfst_dir = environ.get('PYFST_DIR', 'libs/pyfst')
 kaldi_dir = environ.get('KALDI_DIR', 'libs/kaldi')
 version = environ.get('PYKALDI_VERSION', 'unknown')
 library_dirs = ['/usr/lib']
@@ -41,7 +40,6 @@ ext_modules.append(Extension('alex_asr.decoder',
                                  '.',
                                  kaldi_path('tools/openfst/include'),
                                  kaldi_path('src'),
-                                 pyfst_dir,
                              ],
                              library_dirs=library_dirs,
                              libraries=libraries,
@@ -55,7 +53,6 @@ ext_modules.append(Extension(name='alex_asr.fst._fst',
                                      '.',
                                      kaldi_path('tools/openfst/include'),
                                      kaldi_path('src'),
-                                     pyfst_dir,
                                  ],
                                  extra_objects=extra_objects,
                                  sources=['alex_asr/fst/_fst.pyx'],

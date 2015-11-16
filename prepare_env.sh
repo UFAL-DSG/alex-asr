@@ -33,7 +33,3 @@ make -C libs/kaldi/tools atlas
 
 # Build Kaldi.
 make -C libs/kaldi/src
-
-pushd libs/pyfst
-LIBRARY_PATH=${FSTDIR}/lib:${FSTDIR}/lib/fst CPLUS_INCLUDE_PATH=${FSTDIR}/include ${PYTHON} setup.py build_ext --inplace
-popd
