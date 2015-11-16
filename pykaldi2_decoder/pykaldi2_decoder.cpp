@@ -114,25 +114,27 @@ namespace kaldi {
         feature_pipeline_->AcceptWaveform(config_->mfcc_opts.frame_opts.samp_freq, *waveform_in);
     }
 
-    void PyKaldi2Decoder::FrameIn(unsigned char *frame, int32 frame_len) {
-        Vector<BaseFloat> waveform(frame_len);
+    void PyKaldi2Decoder::FrameIn(unsigned char *buffer, int32 buffer_length) {
+        int n_frames = buffer_length / (config_->bits_per_sample / 8);
 
-        for(int32 i = 0; i < frame_len; ++i) {
+        Vector<BaseFloat> waveform(n_frames);
+
+        for(int32 i = 0; i < n_frames; ++i) {
             switch(config_->bits_per_sample) {
                 case 8:
                 {
-                    waveform(i) = (*frame);
-                    frame++;
+                    waveform(i) = (*buffer);
+                    buffer++;
                     break;
                 }
                 case 16:
                 {
-                    int16 k = *reinterpret_cast<uint16*>(frame);
+                    int16 k = *reinterpret_cast<uint16*>(buffer);
 #ifdef __BIG_ENDDIAN__
                     KALDI_SWAP2(k);
 #endif
                     waveform(i) = k;
-                    frame += 2;
+                    buffer += 2;
                     break;
                 }
                 default:
@@ -211,21 +213,41 @@ namespace kaldi {
     }
 
     int32 PyKaldi2Decoder::TrailingSilenceLength() {
-        return kaldi::TrailingSilenceLength(*trans_model_,
-                                            config_->endpoint_config.silence_phones,
-                                            *decoder_);
+        if(config_->endpoint_config.silence_phones == "") {
+            KALDI_WARN << "Trying to get training silence length for a model that does not have"
+                          "silence phones configured.";
+            return -1;
+        } else {
+            return kaldi::TrailingSilenceLength(*trans_model_,
+                                                config_->endpoint_config.silence_phones,
+                                                *decoder_);
+        }
     }
 
     void PyKaldi2Decoder::GetIvector(std::vector<float> *ivector) {
-        OnlineIvectorFeature* ivector_ftr = feature_pipeline_->GetIvectorFeature();
+        if(config_->use_ivectors) {
+            KALDI_WARN << "Trying to get an Ivector for a model that does not have Ivectors.";
+        } else {
+            OnlineIvectorFeature *ivector_ftr = feature_pipeline_->GetIvectorFeature();
 
-        Vector<BaseFloat> ivector_res;
-        ivector_res.Resize(ivector_ftr->Dim());
-        ivector_ftr->GetFrame(decoder_->NumFramesDecoded() - 1, &ivector_res);
+            Vector<BaseFloat> ivector_res;
+            ivector_res.Resize(ivector_ftr->Dim());
+            ivector_ftr->GetFrame(decoder_->NumFramesDecoded() - 1, &ivector_res);
 
-        BaseFloat *data = ivector_res.Data();
-        for(int32 i = 0; i < ivector_res.Dim(); i++) {
-            ivector->push_back(data[i]);
+            BaseFloat *data = ivector_res.Data();
+            for (int32 i = 0; i < ivector_res.Dim(); i++) {
+                ivector->push_back(data[i]);
+            }
         }
+    }
+
+    void PyKaldi2Decoder::SetBitsPerSample(int n_bits) {
+        KALDI_ASSERT(n_bits % 8 == 0);
+
+        config_->bits_per_sample = n_bits;
+    }
+
+    int PyKaldi2Decoder::GetBitsPerSample() {
+        return config_->bits_per_sample;
     }
 } // namespace kaldi

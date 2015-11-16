@@ -29,6 +29,8 @@ cdef extern from "pykaldi2_decoder/pykaldi2_decoder.h" namespace "kaldi":
         int NumFramesDecoded() except +
         int TrailingSilenceLength() except +
         void GetIvector(vector[float] *ivector) except +
+        int GetBitsPerSample() except +
+        void SetBitsPerSample(int n_bits) except +
 
 
 # NOTE: Function signatures as the first line of the docstring are needed in order for
@@ -37,12 +39,10 @@ cdef class Decoder:
     """Speech recognition decoder."""
 
     cdef PyKaldi2Decoder * thisptr
-    cdef long fs
-    cdef int nchan, bits
     cdef utt_decoded
 
-    def __init__(self, model_path, fs=16000, nchan=1, bits=16):
-        """__init__(self, model_path, fs=16000, nchan=1, bits=16)
+    def __init__(self, model_path):
+        """__init__(self, model_path)
         Initialise recognizer with audio input stream parameters.
 
         Args:
@@ -50,8 +50,6 @@ cdef class Decoder:
         """
         self.thisptr = new PyKaldi2Decoder(model_path)
         self.utt_decoded = 0
-        self.fs, self.nchan, self.bits = fs, nchan, bits
-        assert(self.bits % 8 == 0)
 
     def __dealloc__(self):
         del self.thisptr
@@ -76,14 +74,12 @@ cdef class Decoder:
 
         The buffer is interpreted according to the `bits` configuration parameter of the loaded model.
         Usually `bits=16` therefore bytes is interpreted as an array of 16bit little-endian signed integers.
+        Can be modified by `set_bits_per_sample`.
 
         Args:
             frame_str (bytes): Audio data.
         """
-        num_bytes = (self.bits / 8)
-        num_samples = len(frame_str) / num_bytes
-        assert(num_samples * num_bytes == len(frame_str)), "Not align audio to for %d bits" % self.bits
-        self.thisptr.FrameIn(frame_str, num_samples)
+        self.thisptr.FrameIn(frame_str, len(frame_str))
 
     def get_best_path(self):
         """get_best_path(self)
@@ -210,3 +206,19 @@ cdef class Decoder:
         ivector = [ivec[i] for i in xrange(ivec.size())]
 
         return ivector
+
+    def get_bits_per_sample(self):
+        """get_bits_per_sample(self)
+        Get number of bits each input sample has.
+
+        Returns:
+            int number of bits
+        """
+        return self.thisptr.GetBitsPerSample()
+
+    def set_bits_per_sample(self, n_bits):
+        """set_bits_per_sample(self, n_bits)
+        Set number of bits each input sample will have.
+        """
+
+        self.thisptr.SetBitsPerSample(n_bits)

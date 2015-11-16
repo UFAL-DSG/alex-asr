@@ -50,7 +50,7 @@ namespace kaldi {
         ~PyKaldi2Decoder();
 
         int32 Decode(int32 max_frames);
-        void FrameIn(unsigned char *frame, int32 frame_len);
+        void FrameIn(unsigned char *buffer, int32 buffer_length);
         void FrameIn(VectorBase<BaseFloat> *waveform_in);
         bool GetBestPath(std::vector<int> *v_out, BaseFloat *prob);
         bool GetLattice(fst::VectorFst<fst::LogArc> * out_fst, double *tot_lik, bool end_of_utt=true);
@@ -63,6 +63,8 @@ namespace kaldi {
         int32 NumFramesDecoded();
         int32 TrailingSilenceLength();
         void GetIvector(std::vector<float> *ivector);
+        void SetBitsPerSample(int n_bits);
+        int GetBitsPerSample();
     private:
         PyKaldi2FeaturePipeline *feature_pipeline_;
 
