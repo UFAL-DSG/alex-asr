@@ -11,10 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-.. autoclass:: alex_asr.decoders.Decoder
+.. autoclass:: alex_asr.Decoder
     :members:
 
-    .. automethod:: alex_asr.decoders.Decoder.__init__
+    .. automethod:: alex_asr.Decoder.__init__
 
 
 Indices and tables

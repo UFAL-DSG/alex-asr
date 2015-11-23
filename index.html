@@ -49,6 +49,236 @@
 <ul class="simple">
 </ul>
 </div>
+<dl class="class">
+<dt id="alex_asr.Decoder">
+<em class="property">class </em><code class="descclassname">alex_asr.</code><code class="descname">Decoder</code><a class="headerlink" href="#alex_asr.Decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Speech recognition decoder.</p>
+<dl class="method">
+<dt id="alex_asr.Decoder.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>model_path</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise recognizer with audio input stream parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_path</strong> (<em>str</em>) &#8211; Path where the speech recognition models are stored.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.accept_audio">
+<code class="descname">accept_audio</code><span class="sig-paren">(</span><em>self</em>, <em>bytes frame_str</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.accept_audio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert given buffer of audio to the decoder for decoding.</p>
+<p>The buffer is interpreted according to the <cite>bits</cite> configuration parameter of the loaded model.
+Usually <cite>bits=16</cite> therefore bytes is interpreted as an array of 16bit little-endian signed integers.
+Can be modified by <cite>set_bits_per_sample</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_str</strong> (<em>bytes</em>) &#8211; Audio data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.decode">
+<code class="descname">decode</code><span class="sig-paren">(</span><em>self</em>, <em>max_frames=10</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Proceed with decoding the audio.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_frames</strong> (<em>int</em>) &#8211; Maximum number of frames to decode.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Number of decoded frames.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.endpoint_detected">
+<code class="descname">endpoint_detected</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.endpoint_detected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Has an endpoint been detected?</p>
+<p>Configuration of endpointing is loaded from the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bool whether endpoint was detected</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.finalize_decoding">
+<code class="descname">finalize_decoding</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.finalize_decoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finalize the decoding and prepare the internal representation for lattice extration.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_best_path">
+<code class="descname">get_best_path</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_best_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current 1-best decoding hypothesis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(hypothesis likelihood, list of word id&#8217;s)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_bits_per_sample">
+<code class="descname">get_bits_per_sample</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_bits_per_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get number of bits each input sample has.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">int number of bits</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_final_relative_cost">
+<code class="descname">get_final_relative_cost</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_final_relative_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the relative cost of the decoding so far of the final states.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">float cost</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_ivector">
+<code class="descname">get_ivector</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_ivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Ivector of the latest decoded frame.</p>
+<p>Ivector extraction is specified in the model configuration. If the model does not use Ivectors
+this function does not return anything.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of floats with the ivector</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_lattice">
+<code class="descname">get_lattice</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get word posterior lattice and its likelihood.</p>
+<p>NOTE: It may last 100 ms so consideration is needed when used in a timing-critical applications.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(lattice likelihood, lattice)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_nbest">
+<code class="descname">get_nbest</code><span class="sig-paren">(</span><em>self</em>, <em>n=1</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_nbest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get n best decoding hypotheses (from word posterior lattice).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<em>int</em>) &#8211; How many hypotheses to generate.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of hypotheses; each hypothesis is a tuple (hypothesis probability, list of word ids)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_num_frames_decoded">
+<code class="descname">get_num_frames_decoded</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_num_frames_decoded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get number of frames decoded so far.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">int number of frames decoded</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_trailing_silence_length">
+<code class="descname">get_trailing_silence_length</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_trailing_silence_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get number of consecutive silence frames from the end of utterance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">int number of frames in the best hypothesis, for which silence
+was consecutively decoded, from the end of utterance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.get_word">
+<code class="descname">get_word</code><span class="sig-paren">(</span><em>self</em>, <em>word_id</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.get_word" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get word string form given word id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>word_id</strong> (<em>int</em>) &#8211; Word id (e.g. as returned by get_best_path).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Word string (str).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.input_finished">
+<code class="descname">input_finished</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.input_finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signalize to the decoder that no more input will be added.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the decoder for decoding a new utterance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex_asr.Decoder.set_bits_per_sample">
+<code class="descname">set_bits_per_sample</code><span class="sig-paren">(</span><em>self</em>, <em>n_bits</em><span class="sig-paren">)</span><a class="headerlink" href="#alex_asr.Decoder.set_bits_per_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set number of bits each input sample will have.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
