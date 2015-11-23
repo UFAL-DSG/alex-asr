@@ -2,6 +2,8 @@
 
 Online decoder for Kaldi NNET2 and GMM models with Python bindings.
 
+Python module documentation is [here](http://ufal-dsg.github.io/alex-asr/).
+
 # Build & Install
 
 ```
@@ -137,6 +139,15 @@ Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/pitch-functions
 
 Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/pitch-functions.h#L250
 
+# Regenerate and publish documentation
+
+Provided you have built the module, the documentation can be built by the following commads:
+```
+$ cd doc
+$ bash build_and_push_to_web.sh 
+```
+
+This uses sphinx to build the documentation and pushes it as a GitHub page of the repository.
 
 # License
 
