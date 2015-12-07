@@ -1,10 +1,10 @@
-.. dialog-asr documentation master file, created by
+.. alex_asr documentation master file, created by
    sphinx-quickstart on Mon Nov 16 08:58:43 2015.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Alex-ASR Python module documentation
-====================================
+alex_asr - Python documentation
+===============================
 
 Contents:
 
