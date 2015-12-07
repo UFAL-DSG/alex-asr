@@ -22,7 +22,6 @@ extra_link_args = []
 extra_objects = environ.get('ADDLIBS', '').split()
 extra_compile_args = environ.get('CXXFLAGS', '').split()
 kaldi_dir = environ.get('KALDI_DIR', 'libs/kaldi')
-version = environ.get('PYKALDI_VERSION', 'unknown')
 library_dirs = ['/usr/lib']
 libraries = ['lapack_atlas', 'cblas', 'atlas', 'f77blas', 'm', 'pthread', 'dl']
 
@@ -66,23 +65,27 @@ setup(
     packages=find_packages(exclude=["alex_asr/decoder.cpp"]),
     include_package_data=True,
     cmdclass={'build_ext': build_ext},
-    version=version,
+    version='1.0.0b',
     install_requires=install_requires,
     setup_requires=['cython>=0.19.1', 'nose>=1.0'],
     ext_modules=ext_modules,
-    author='Lukas Zilka',
+    author='Charles University in Prague (Lukas Zilka)',
     author_email='lukas@zilka.me',
     url='https://github.com/DSG-UFAL/alex-asr',
-    license='Apache, Version 2.0',
-    keywords='Incremental speech recognition decoder.',
-    description='',
+    license='Apache Software License 2.0',
+    keywords='asr, speech recognition, decoder, speech',
+    description='Incremental speech recognition decoder for Kaldi NNET2 and GMM models.',
     long_description='',
     classifiers='''
         Programming Language :: Python :: 2
-        License :: OSI Approved :: Apache License, Version 2
+        Programming Language :: Python :: 3
+        License :: OSI Approved :: Apache Software License
         Operating System :: POSIX :: Linux
-        Intended Audience :: Speech Recognition scientist
-        Intended Audience :: Students
+        Topic :: Multimedia :: Sound/Audio :: Speech
+        Topic :: Scientific/Engineering
+        Intended Audience :: Developers
+        Intended Audience :: Science/Research
+        Intended Audience :: Telecommunications Industry
         Environment :: Console
         '''.strip().splitlines(),
 )
