@@ -56,6 +56,7 @@ namespace alex_asr {
         void LoadDecoder();
         void ParseConfig();
         void Deallocate();
+        bool FileExists(const std::string& name);
     };
 
 /// @} end of "addtogroup online_latgen"

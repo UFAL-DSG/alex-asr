@@ -45,12 +45,29 @@ namespace alex_asr {
         KALDI_PARANOID_ASSERT(config_ == NULL);
 
         config_ = new DecoderConfig();
-        config_->LoadConfigs("pykaldi.cfg");
+
+        string cfg_name;
+        if(FileExists("pykaldi.cfg")) {
+            cfg_name = "pykaldi.cfg";
+            KALDI_WARN << "Using deprecated configuration file. Please move pykaldi.cfg to alex_asr.conf.";
+        } else if(FileExists("alex_asr.conf")) {
+            cfg_name = "alex_asr.conf";
+        } else {
+            KALDI_ERR << "AlexASR Decoder configuration (alex_asr.conf) not found in model directory."
+                    "Please check your configuration.";
+        }
+
+        config_->LoadConfigs(cfg_name);
 
         if(!config_->InitAndCheck()) {
             KALDI_ERR << "Error when checking if the configuration is valid. "
                     "Please check your configuration.";
         }
+    }
+
+    bool Decoder::FileExists(const std::string& name) {
+        struct stat buffer;
+        return (stat (name.c_str(), &buffer) == 0);
     }
 
     void Decoder::LoadDecoder() {

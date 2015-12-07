@@ -1,56 +1,44 @@
-from kaldi2 import decoders
+from alex_asr import Decoder
 import wave
 import struct
 import os
 
-MODEL_PATH = "../_models/nnet_model_cs_voip"
+
+MODEL_PATH = "asr_model_digits"
 
 if __name__ == "__main__":
-    x = decoders.cPyKaldi2Decoder(MODEL_PATH)
+    decoder = Decoder(MODEL_PATH)
 
-    print os.getcwd()
+    file_name = os.path.join(os.path.dirname(__file__), 'eleven.wav')
 
-    data = wave.open(os.path.join(os.path.dirname(__file__), 'test2.wav'))
-    #data = wave.open('test/test.wav') #test/test2.wav')
-    wav_duration = data.getnframes() * 1.0 / data.getframerate()
+    data = wave.open(file_name)
 
-    import time
-
-    beg_time = time.time()
     n_decoded = 0
     while True:
         frames = data.readframes(8000)
         if len(frames) == 0:
             break
-        x.frame_in(frames)
-        n_decoded += x.decode(8000)
+
+        decoder.accept_audio(frames)
+        n_decoded += decoder.decode(8000)
 
         if n_decoded > 0:
-            prob, word_ids = x.get_best_path()
-            ivec = x.get_ivector()
-            print map(x.get_word, word_ids), x.endpoint_detected(), ivec
+            prob, word_ids = decoder.get_best_path()
+            # ivec = decoder.get_ivector()
+            print 'Hypothesis: "%s" (speaker finished speaking: %s)' % (" ".join(map(decoder.get_word, word_ids)), decoder.endpoint_detected(), )
 
-    end_time = time.time()
+    decoder.input_finished()
+    print 'Final hypothesis:', " ".join(map(decoder.get_word, word_ids))
 
-    #print x.get_nbest(10)
+    decoder.finalize_decoding()
 
-    dec_duration = end_time - beg_time
+    p, lat = decoder.get_lattice()
 
-    print 'wav duration', wav_duration
-    print 'decoding duration', dec_duration
-
-    print 'rtf', wav_duration / dec_duration
-
-    exit(0)
-
-    x.finalize_decoding()
-
-    p, lat = x.get_lattice()
-
+    print 'Resulting lattice:'
     for state in lat.states:
-        cum = 0.0
+        print '  State', state
         for arc in state.arcs:
-            print x.get_word(arc.ilabel)
-        print
+            print '    ', decoder.get_word(arc.ilabel)
+
 
 

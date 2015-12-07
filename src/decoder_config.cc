@@ -10,14 +10,14 @@ namespace alex_asr {
             use_ivectors(false),
             use_cmvn(false),
             use_pitch(false),
-            cfg_decoder("cfg.decoder"),
-            cfg_decodable("cfg.decodable"),
-            cfg_mfcc("cfg.mfcc"),
-            cfg_cmvn("cfg.cmvn"),
-            cfg_splice("cfg.splice"),
-            cfg_endpoint("cfg.endpoint"),
-            cfg_ivector("cfg.ivector"),
-            cfg_pitch("cfg.pitch")
+            cfg_decoder(""),
+            cfg_decodable(""),
+            cfg_mfcc(""),
+            cfg_cmvn(""),
+            cfg_splice(""),
+            cfg_endpoint(""),
+            cfg_ivector(""),
+            cfg_pitch("")
     {
         decodable_opts.acoustic_scale = 0.1;
         splice_opts.left_context = 3;
