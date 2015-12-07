@@ -18,10 +18,10 @@ Utils module contains mostly conversion functions
 from __future__ import unicode_literals
 
 import os
-from ordereddefaultdict import DefaultOrderedDict
+from alex_asr.ordereddefaultdict import DefaultOrderedDict
 import errno
 import wave
-import fst
+import alex_asr.fst
 import codecs
 
 
@@ -195,7 +195,7 @@ def int_to_txt(inp_path, out_path, wst_dict, unknown_symbol=None):
                     try:
                         word = wst_dict[iw]
                     except KeyError:
-                        print 'Warning: unknown word %s' % iw
+                        print('Warning: unknown word %s' % iw)
                         word = unknown_symbol
                     w.write('%s ' % word)
                 w.write('\n')

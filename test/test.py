@@ -6,6 +6,11 @@ import os
 
 MODEL_PATH = "asr_model_digits"
 
+
+def word_ids_to_str_hyp(decoder, word_ids):
+    return" ".join(decoder.get_word(word_id).decode('utf8') for word_id in word_ids)
+
+
 if __name__ == "__main__":
     decoder = Decoder(MODEL_PATH)
 
@@ -25,20 +30,20 @@ if __name__ == "__main__":
         if n_decoded > 0:
             prob, word_ids = decoder.get_best_path()
             # ivec = decoder.get_ivector()
-            print 'Hypothesis: "%s" (speaker finished speaking: %s)' % (" ".join(map(decoder.get_word, word_ids)), decoder.endpoint_detected(), )
+            print('Hypothesis: "%s" (speaker finished speaking: %s)' % (word_ids_to_str_hyp(decoder, word_ids), decoder.endpoint_detected(), ))
 
     decoder.input_finished()
-    print 'Final hypothesis:', " ".join(map(decoder.get_word, word_ids))
+    print('Final hypothesis: "%s"' % word_ids_to_str_hyp(decoder, word_ids))
 
     decoder.finalize_decoding()
 
     p, lat = decoder.get_lattice()
 
-    print 'Resulting lattice:'
+    print ('Resulting lattice:')
     for state in lat.states:
-        print '  State', state
+        print ('  State: %s' % state)
         for arc in state.arcs:
-            print '    ', decoder.get_word(arc.ilabel)
+            print ('    %s' % decoder.get_word(arc.ilabel))
 
 
 

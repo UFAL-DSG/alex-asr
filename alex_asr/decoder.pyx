@@ -50,7 +50,7 @@ cdef class Decoder:
         Args:
             model_path (str): Path where the speech recognition models are stored.
         """
-        self.thisptr = new _Decoder(model_path)
+        self.thisptr = new _Decoder(model_path.encode('utf8'))
         self.utt_decoded = 0
 
     def __dealloc__(self):

@@ -56,7 +56,7 @@ class TestExpandPref(ut_TestCase):
         test, gold = copy.deepcopy(self.test), copy.deepcopy(self.gold)
         expand_prefix(test, gold)
 
-        print '%r\ntest vs gold\n%r\n' % (test, gold)
+        print('%r\ntest vs gold\n%r\n' % (test, gold))
         self.assertTrue(self.gold == gold, 'We modified gold!')
 
         self.assertFalse(set(test) ^ set(gold), 'symetric difference of keys should be empty')
@@ -76,7 +76,7 @@ class TestLatticeToNbest(ut_TestCase):
             if not os.path.exists(shortest_fst):
                 call(['fstcompile', shortest_txt, shortest_fst])
         except Exception as e:
-            print 'Failed to generate testing fst'
+            print('Failed to generate testing fst')
             raise e
         self.s = fst.read_std(shortest_fst)
         self.s_result = [(110.40000001341105, [1, 3, 4]),

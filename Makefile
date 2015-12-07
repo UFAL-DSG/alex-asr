@@ -8,6 +8,8 @@ CXX = g++
 AR = ar
 AS = as
 RANLIB = ranlib
+PYTHON = python
+# PYTHON = python3  # Use this line if you want to build the extension for python3.
 
 FSTROOT = $(KALDI_DIR)/tools/openfst/
 LIBFILE = $(LIBNAME).a
@@ -61,7 +63,7 @@ py: $(LIBFILE)
 	CXXFLAGS="$(CXXFLAGS)" \
 	ADDLIBS="$(LIBNAME).a $(ADDLIBS)" \
 	LIBRARY_PATH=$(FSTROOT)/lib:$(FSTROOT)/lib/fst \
-	    python setup.py build_ext build
+	    $(PYTHON) setup.py build_ext build
 
 clean:
 	rm -rf build

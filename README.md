@@ -1,6 +1,6 @@
 # Alex-ASR
 
-Online decoder for Kaldi NNET2 and GMM models with Python bindings.
+Online decoder for Kaldi NNET2 and GMM models with Python bindings (tested with Python 2.7 and Python 3.4).
 
 Python module documentation is [here](http://ufal-dsg.github.io/alex-asr/).
 
