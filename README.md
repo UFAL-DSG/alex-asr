@@ -31,9 +31,15 @@ print " ".join(map(decoder.get_word, word_ids))
 
 # Build & Install
 
+## Ubuntu 14.04 requirements installation
 ```
-$ prepare_env.sh
-$ make
+apt-get update
+apt-get install -y build-essential libatlas-base-dev python-dev python-pip git wget gfortran g++ unzip zlib1g-dev automake autoconf libtool subversion
+pip install Cython
+```
+
+## Instalation
+```
 $ python setup.py install
 ```
 
