@@ -44,7 +44,7 @@ namespace alex_asr {
         if (config.use_pitch) {
             pitch_ = new OnlinePitchFeature(config.pitch_opts);
             pitch_feature_ = new OnlineProcessPitch(config.pitch_process_opts, pitch_);
-            pitch_append_ = new OnlineAppendFeature(mfcc_, pitch_feature_);
+            pitch_append_ = new OnlineAppendFeature(prev_feature, pitch_feature_);
         }
 
         if (config.use_ivectors) {
