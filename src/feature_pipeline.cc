@@ -50,7 +50,7 @@ namespace alex_asr {
         if (config.use_ivectors) {
             KALDI_VLOG(3) << "Feature IVectors";
             ivector_ = new OnlineIvectorFeature(*config.ivector_extraction_info, mfcc_);
-            prev_feature = ivector_append_ = new OnlineAppendFeature(mfcc_, ivector_);
+            prev_feature = ivector_append_ = new OnlineAppendFeature(prev_feature, ivector_);
             KALDI_VLOG(3) << "     -> dims: " << prev_feature->Dim();
         }
 
