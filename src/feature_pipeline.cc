@@ -35,9 +35,11 @@ namespace alex_asr {
         prev_feature = splice_ = new OnlineSpliceFrames(config.splice_opts, prev_feature);
         KALDI_VLOG(3) << "    -> dims: " << splice_->Dim();
 
-        KALDI_VLOG(3) << "Feature LDA " << config.lda_mat->NumRows() << " " << config.lda_mat->NumCols();
-        prev_feature = transform_lda_ = new OnlineTransform(*config.lda_mat, prev_feature);
-        KALDI_VLOG(3) << "    -> dims: " << transform_lda_->Dim();
+        if(config.use_lda) {
+            KALDI_VLOG(3) << "Feature LDA " << config.lda_mat->NumRows() << " " << config.lda_mat->NumCols();
+            prev_feature = transform_lda_ = new OnlineTransform(*config.lda_mat, prev_feature);
+            KALDI_VLOG(3) << "    -> dims: " << transform_lda_->Dim();
+        }
 
         if (config.use_pitch) {
             pitch_ = new OnlinePitchFeature(config.pitch_opts);

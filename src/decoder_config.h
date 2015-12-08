@@ -44,6 +44,8 @@ namespace alex_asr {
         ModelType model_type;
         int32 bits_per_sample;
 
+        bool use_lda;
+        bool use_splice;
         bool use_ivectors;
         bool use_cmvn;
         bool use_pitch;

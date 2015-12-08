@@ -58,6 +58,7 @@ Example of `pykaldi.cfg` that should reside in `model_dir`:
 --words=words.txt      # Filename with a list of words (each line contains: ""<word> <word-id>").
 --mat_lda=final.mat    # Filaneme of the LDA transform matrix.
 --mat_cmvn=cmvn.mat    # Filename of the CMVN matrix with global CMVN stats used for OnlineCMVN estimator.
+--use_lda=true         # true/false; Says whether to use LDA transform specified by --mat_lda on MFCC features.
 --use_ivectors=true    # true/false; Says whether to use Ivector features for decoding
                        # (depends on your decoder). If set to true, you need to also specify --cfg_ivector
                        # with configuration for the ivector extractor.

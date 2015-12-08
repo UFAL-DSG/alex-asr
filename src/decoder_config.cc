@@ -7,6 +7,7 @@ namespace alex_asr {
             cmvn_mat(NULL),
             ivector_extraction_info(NULL),
             bits_per_sample(16),
+            use_lda(true),
             use_ivectors(false),
             use_cmvn(false),
             use_pitch(false),
@@ -37,6 +38,7 @@ namespace alex_asr {
         po->Register("words", &words_rxfilename, "Word to ID mapping filename.");
         po->Register("mat_lda", &lda_mat_rspecifier, "LDA matrix filename.");
         po->Register("mat_cmvn", &fcmvn_mat_rspecifier, "CMVN matrix filename.");
+        po->Register("use_lda", &use_lda, "Are we using LDA transform?");
         po->Register("use_ivectors", &use_ivectors, "Are we using ivector features?");
         po->Register("use_cmvn", &use_cmvn, "Are we using cmvn transform?");
         po->Register("use_pitch", &use_pitch, "Are we using pitch feature?");
@@ -75,7 +77,9 @@ namespace alex_asr {
     }
 
     void DecoderConfig::InitAux() {
-        LoadLDA();
+        if(use_lda) {
+            LoadLDA();
+        }
 
         if (use_cmvn) {
             LoadCMVN();
@@ -176,8 +180,8 @@ namespace alex_asr {
         res &= OptionCheck(words_rxfilename == "",
                            "You have to specify --words.");
 
-        res &= OptionCheck(lda_mat_rspecifier == "",
-                           "You have to specify --mat_lda.");
+        res &= OptionCheck(use_lda && lda_mat_rspecifier == "",
+                           "You have to specify --mat_lda or set --use_lda=false.");
 
         return res;
     }

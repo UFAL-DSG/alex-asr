@@ -58,7 +58,7 @@ setup(
     packages=find_packages(exclude=["alex_asr/decoder.cpp"]),
     include_package_data=True,
     cmdclass={'build_ext': build_ext_with_make},
-    version='1.0.2b',
+    version='1.0.4',
     install_requires=install_requires,
     setup_requires=['cython>=0.19.1', 'nose>=1.0'],
     ext_modules=[
@@ -90,7 +90,7 @@ setup(
     license='Apache Software License 2.0',
     keywords='asr, speech recognition, decoder, speech',
     description='Incremental speech recognition decoder for Kaldi NNET2 and GMM models.',
-    download_url='https://github.com/UFAL-DSG/alex-asr/archive/v1.0.0b.tar.gz',
+    download_url='https://github.com/UFAL-DSG/alex-asr/archive/v1.0.4.tar.gz',
     long_description='',
     classifiers='''
         Programming Language :: Python :: 2
