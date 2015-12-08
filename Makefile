@@ -50,7 +50,7 @@ ADDLIBS = $(FSTROOT)/src/lib/.libs/libfst.a \
 
 LDFLAGS = $(ADDLIBS) -llapack_atlas -lcblas -latlas -lf77blas -lm -lpthread -ldl
 
-all: $(LIBFILE) $(BINFILES) py
+all: $(LIBFILE) $(BINFILES) py_flags
 
 $(LIBFILE): $(OBJFILES)
 	$(AR) -cru $(LIBNAME).a $(OBJFILES)
@@ -59,11 +59,11 @@ $(LIBFILE): $(OBJFILES)
 $(BINFILES): $(OBJFILES)
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
 
-py: $(LIBFILE)
-	CXXFLAGS="$(CXXFLAGS)" \
-	ADDLIBS="$(LIBNAME).a $(ADDLIBS)" \
-	LIBRARY_PATH=$(FSTROOT)/lib:$(FSTROOT)/lib/fst \
-	    $(PYTHON) setup.py build_ext build
+.PHONY: py_flags
+py_flags:
+	echo $(LIBNAME).a $(ADDLIBS) > setup.py.add_libs
+	echo $(CXXFLAGS) > setup.py.cxxflags_kaldi
+	echo "-L$(FSTROOT)/lib -L$(FSTROOT)/lib/fst" > setup.py.cxxflags_pyfst
 
 clean:
 	rm -rf build

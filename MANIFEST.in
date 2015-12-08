@@ -1,0 +1,9 @@
+include Makefile
+include alex_asr/*.py
+include alex_asr/*.pyx
+include alex_asr/fst/*.pxd
+include alex_asr/fst/*.pyx
+include alex_asr/fst/*.py
+include src/*.cc
+include src/*.h
+include prepare_env.sh
