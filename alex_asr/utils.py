@@ -21,7 +21,7 @@ import os
 from alex_asr.ordereddefaultdict import DefaultOrderedDict
 import errno
 import wave
-import alex_asr.fst
+import alex_asr.fst as fst
 import codecs
 
 
