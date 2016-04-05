@@ -21,12 +21,12 @@ if [ ! -d libs ]; then
     git clone https://github.com/UFAL-DSG/pyfst.git libs/pyfst
 
     # Prepare Kaldi dependencies.
-    make -C libs/kaldi/tools atlas
+    make -j 4 -C libs/kaldi/tools atlas
     (
         # Patch OpenFST makefile so that we can link with it statically.
         cd libs/kaldi/tools;
         sed -i "s/--enable-ngram-fsts/--enable-ngram-fsts --with-pic/g" Makefile
-        make openfst
+        make -j 4 openfst
     )
 
     # Configure Kaldi.
@@ -37,7 +37,7 @@ if [ ! -d libs ]; then
     )
 
     # Build Kaldi.
-    make -C libs/kaldi/src
+    make -j 4 -C libs/kaldi/src
 else
     echo "It appears that the env is prepared. If there are errors, try deleting libs/ and rerunning the script."
 fi
