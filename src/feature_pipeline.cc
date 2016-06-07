@@ -30,6 +30,13 @@ namespace alex_asr {
             cmvn_state_ = new OnlineCmvnState(*config.cmvn_mat);
             prev_feature = cmvn_ = new OnlineCmvn(config.cmvn_opts, *cmvn_state_, prev_feature);
         }
+
+        if (config.use_pitch) {
+            pitch_ = new OnlinePitchFeature(config.pitch_opts);
+            pitch_feature_ = new OnlineProcessPitch(config.pitch_process_opts, pitch_);
+            prev_feature = pitch_append_ = new OnlineAppendFeature(prev_feature, pitch_feature_);
+        }
+
         KALDI_VLOG(3) << "Feature SPLICE " << config.splice_opts.left_context << " " <<
                       config.splice_opts.right_context;
         prev_feature = splice_ = new OnlineSpliceFrames(config.splice_opts, prev_feature);
@@ -39,12 +46,6 @@ namespace alex_asr {
             KALDI_VLOG(3) << "Feature LDA " << config.lda_mat->NumRows() << " " << config.lda_mat->NumCols();
             prev_feature = transform_lda_ = new OnlineTransform(*config.lda_mat, prev_feature);
             KALDI_VLOG(3) << "    -> dims: " << transform_lda_->Dim();
-        }
-
-        if (config.use_pitch) {
-            pitch_ = new OnlinePitchFeature(config.pitch_opts);
-            pitch_feature_ = new OnlineProcessPitch(config.pitch_process_opts, pitch_);
-            pitch_append_ = new OnlineAppendFeature(prev_feature, pitch_feature_);
         }
 
         if (config.use_ivectors) {
@@ -77,10 +78,16 @@ namespace alex_asr {
     void FeaturePipeline::AcceptWaveform(BaseFloat sampling_rate,
                                                  const VectorBase<BaseFloat> &waveform) {
         mfcc_->AcceptWaveform(sampling_rate, waveform);
+        if(pitch_) {
+            pitch_->AcceptWaveform(sampling_rate, waveform);
+        }
     }
 
     void FeaturePipeline::InputFinished() {
         mfcc_->InputFinished();
+        if(pitch_) {
+            pitch_->InputFinished();
+        }
     }
 
     OnlineIvectorFeature *FeaturePipeline::GetIvectorFeature() {
