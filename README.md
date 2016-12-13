@@ -17,11 +17,11 @@ decoder = Decoder("asr_model_dir/")
 
 # Load audio frames from input wav file.
 data = wave.open("input.wav")
-frames = data.readframes(data.genframes())
+frames = data.readframes(data.getnframes())
 
 # Feed the audio data to the decoder.
 decoder.accept_audio(frames)
-decoder.decode(data.genframes())
+decoder.decode(data.getnframes())
 decoder.input_finished()
 
 # Get and print the best hypothesis.
@@ -38,12 +38,12 @@ apt-get install -y build-essential libatlas-base-dev python-dev python-pip git w
 pip install Cython
 ```
 
-## Instalation
+## Installation
 ```
 $ python setup.py install
 ```
 
-# Config
+# Configuration
 
   - The decoder takes one argument `model_dir` for initialization. It is a directory with the decoder model and its configuration.
   - It expects that a file called `alex_asr.conf` is contained in it. This file specifies filenames of all other configs, and adheres to Kaldi configuration standards (i.e. one option per line in a text file).
