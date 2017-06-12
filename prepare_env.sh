@@ -2,7 +2,7 @@
 set -e
 
 PYTHON=python
-FSTDIR=$(python -c "import os,sys; print os.path.realpath(sys.argv[1])" libs/kaldi/tools/openfst)
+FSTDIR=$(python -c "from __future__ import print_function; import os,sys; print(os.path.realpath(sys.argv[1]))" libs/kaldi/tools/openfst)
 OPENFST_VERSION=1.3.4
 KALDI_REV=ea37842dc1f4f03819acae27a6363c993ce5d12b
 
